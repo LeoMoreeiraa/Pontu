@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pontu - Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <style>
+        .login-container {
+            min-height: 100vh;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-box {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .login-logo-icon {
+            font-size: 40px;
+        }
+
+        .login-title {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            color: #212121;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+
+        .error-message {
+            background: #FFEBEE;
+            color: #C62828;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 14px;
+            color: #757575;
+        }
+
+        .login-footer a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-logo">
+                <span class="login-logo-icon">🌱</span>
+            </div>
+            
+            <h2 class="login-title">PONTU</h2>
+            
+            <div id="errorMessage" class="error-message"></div>
+            
+            <form id="loginForm" method="POST" action="/login">
+                <div class="form-group">
+                    <label class="form-label" for="email">E-mail</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        class="form-input" 
+                        placeholder="seu@email.com"
+                        required
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="senha">Senha</label>
+                    <input 
+                        type="password" 
+                        id="senha" 
+                        name="senha" 
+                        class="form-input" 
+                        placeholder="••••••••"
+                        required
+                    >
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block mt-2">
+                    Entrar
+                </button>
+            </form>
+            
+            <div class="login-footer">
+                Não tem conta? <a href="/cadastro">Cadastre-se</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Exibe mensagem de erro se houver
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        
+        if (error) {
+            const errorDiv = document.getElementById('errorMessage');
+            if (error === 'credentials') {
+                errorDiv.textContent = '❌ E-mail ou senha incorretos!';
+            } else if (error === 'required') {
+                errorDiv.textContent = '⚠️ Por favor, faça login para continuar.';
+            } else {
+                errorDiv.textContent = '❌ Erro ao fazer login. Tente novamente.';
+            }
+            errorDiv.classList.add('show');
+        }
+
+        // Validação do formulário
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+            
+            if (!email || !senha) {
+                e.preventDefault();
+                const errorDiv = document.getElementById('errorMessage');
+                errorDiv.textContent = '⚠️ Por favor, preencha todos os campos!';
+                errorDiv.classList.add('show');
+            }
+        });
+    </script>
+</body>
+</html>
