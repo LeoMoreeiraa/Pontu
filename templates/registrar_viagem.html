@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pontu - Registrar Viagem</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <style>
+        .header-registrar {
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+            padding: 15px 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .header-title-registrar {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .content-registrar {
+            padding: 30px 20px 100px;
+        }
+
+        .success-card {
+            background: #E8F5E9;
+            border: 2px solid #4CAF50;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .success-card.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+
+        .success-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2E7D32;
+            margin-bottom: 10px;
+        }
+
+        .success-points {
+            font-size: 18px;
+            color: #4CAF50;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .modal-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .modal-card {
+            background: #F5F5F5;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 20px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-card:hover {
+            background: #E8F5E9;
+            border-color: #81C784;
+        }
+
+        .modal-card.selected {
+            background: #E8F5E9;
+            border-color: #4CAF50;
+        }
+
+        .modal-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .modal-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .modal-points {
+            font-size: 12px;
+            color: #4CAF50;
+            font-weight: 600;
+        }
+
+        .info-box {
+            background: #E3F2FD;
+            border-left: 4px solid #2196F3;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #1565C0;
+        }
+
+        .btn-submit {
+            width: 100%;
+            margin-top: 20px;
+            padding: 15px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header-registrar">
+            <button class="back-btn" onclick="window.location.href='/home'">←</button>
+            <div class="header-title-registrar">Registrar Viagem</div>
+        </div>
+
+        <div class="content-registrar">
+            <!-- Card de Sucesso (oculto inicialmente) -->
+            <div id="successCard" class="success-card">
+                <div class="success-icon">🎉</div>
+                <div class="success-title">Viagem Registrada!</div>
+                <div class="success-points" id="successMessage">Você ganhou <strong>10 pontos</strong></div>
+            </div>
+
+            <!-- Formulário -->
+            <div class="form-section">
+                <h3 style="margin-bottom: 20px; color: #212121;">Qual transporte você usou?</h3>
+                
+                <form id="viagemForm" method="POST" action="/registrar-viagem">
+                    <!-- Grid de Modais -->
+                    <div class="modal-cards">
+                        <div class="modal-card" data-modal="metro" data-pontos="10">
+                            <div class="modal-icon">🚇</div>
+                            <div class="modal-name">Metrô</div>
+                            <div class="modal-points">+10 pontos</div>
+                        </div>
+
+                        <div class="modal-card" data-modal="trem" data-pontos="10">
+                            <div class="modal-icon">🚆</div>
+                            <div class="modal-name">Trem</div>
+                            <div class="modal-points">+10 pontos</div>
+                        </div>
+
+                        <div class="modal-card" data-modal="onibus" data-pontos="12">
+                            <div class="modal-icon">🚌</div>
+                            <div class="modal-name">Ônibus</div>
+                            <div class="modal-points">+12 pontos</div>
+                        </div>
+
+                        <div class="modal-card" data-modal="bike" data-pontos="15">
+                            <div class="modal-icon">🚴</div>
+                            <div class="modal-name">Bicicleta</div>
+                            <div class="modal-points">+15 pontos</div>
+                        </div>
+
+                        <div class="modal-card" data-modal="patinete" data-pontos="15">
+                            <div class="modal-icon">🛴</div>
+                            <div class="modal-name">Patinete</div>
+                            <div class="modal-points">+15 pontos</div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="modal" id="modalInput" required>
+
+                    <!-- Campos Opcionais -->
+                    <div class="form-group">
+                        <label class="form-label">Origem (opcional)</label>
+                        <input 
+                            type="text" 
+                            name="origem" 
+                            class="form-input" 
+                            placeholder="Ex: Estação Sé"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Destino (opcional)</label>
+                        <input 
+                            type="text" 
+                            name="destino" 
+                            class="form-input" 
+                            placeholder="Ex: Estação Paulista"
+                        >
+                    </div>
+
+                    <div class="info-box">
+                        💡 <strong>Dica:</strong> Transportes mais sustentáveis como bicicleta e patinete 
+                        concedem mais pontos!
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-submit" disabled id="submitBtn">
+                        Selecione um transporte
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Navegação Inferior -->
+        <div class="bottom-nav-home">
+            <a href="/home" class="nav-item-home">
+                <span class="nav-item-icon">🏠</span>
+                <span class="nav-item-label">Início</span>
+            </a>
+            
+            <a href="/rotas" class="nav-item-home">
+                <span class="nav-item-icon">🗺️</span>
+                <span class="nav-item-label">Rotas</span>
+            </a>
+            
+            <a href="/resgatar" class="nav-item-home">
+                <span class="nav-item-icon">🎁</span>
+                <span class="nav-item-label">Resgatar</span>
+            </a>
+            
+            <a href="/perfil" class="nav-item-home">
+                <span class="nav-item-icon">👤</span>
+                <span class="nav-item-label">Perfil</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        let selectedModal = null;
+        let selectedPoints = 0;
+
+        // Seleção de modal
+        document.querySelectorAll('.modal-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove seleção anterior
+                document.querySelectorAll('.modal-card').forEach(c => c.classList.remove('selected'));
+                
+                // Adiciona seleção atual
+                this.classList.add('selected');
+                
+                // Armazena valores
+                selectedModal = this.dataset.modal;
+                selectedPoints = this.dataset.pontos;
+                
+                // Atualiza input hidden
+                document.getElementById('modalInput').value = selectedModal;
+                
+                // Habilita botão
+                const submitBtn = document.getElementById('submitBtn');
+                submitBtn.disabled = false;
+                submitBtn.textContent = `Registrar Viagem (+${selectedPoints} pts)`;
+            });
+        });
+
+        // Envio do formulário
+        document.getElementById('viagemForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            try {
+                const response = await fetch('/registrar-viagem', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    // Mostra card de sucesso
+                    const successCard = document.getElementById('successCard');
+                    const successMessage = document.getElementById('successMessage');
+                    successMessage.innerHTML = `Você ganhou <strong>${selectedPoints} pontos</strong>! 🎉`;
+                    successCard.classList.add('show');
+                    
+                    // Esconde o formulário
+                    document.querySelector('.form-section').style.display = 'none';
+                    
+                    // Redireciona após 2 segundos
+                    setTimeout(() => {
+                        window.location.href = '/home';
+                    }, 2000);
+                }
+            } catch (error) {
+                alert('Erro ao registrar viagem. Tente novamente.');
+            }
+        });
+
+        // Se houver sucesso na URL (fallback)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('success')) {
+            const successCard = document.getElementById('successCard');
+            successCard.classList.add('show');
+            document.querySelector('.form-section').style.display = 'none';
+            
+            setTimeout(() => {
+                window.location.href = '/home';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

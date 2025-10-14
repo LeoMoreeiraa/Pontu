@@ -96,28 +96,9 @@ def logout():
 def home():
     """Dashboard principal"""
     usuario = db.get_usuario(session['user_id'])
-    return f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Pontu - Home</title>
-        <meta charset="UTF-8">
-    </head>
-    <body style="font-family: Arial; padding: 40px; text-align: center;">
-        <h1>🎉 Bem-vindo(a), {usuario['nome']}!</h1>
-        <p style="font-size: 24px; color: #4CAF50;">
-            Você tem <strong>{usuario['pontos']} pontos</strong>
-        </p>
-        <br>
-        <p style="color: #666;">
-            Esta é uma rota protegida! Você está autenticado.
-        </p>
-        <br>
-        <a href="/logout" style="background: #f44336; color: white; padding: 10px 20px; 
-           text-decoration: none; border-radius: 5px;">Sair</a>
-    </body>
-    </html>
-    """
+    return render_template('home.html', 
+                         nome=usuario['nome'].split()[0],  # Apenas primeiro nome
+                         pontos=usuario['pontos'])
 
 @app.route('/perfil')
 @login_required
@@ -125,6 +106,23 @@ def perfil():
     """Perfil do usuário (temporário)"""
     usuario = db.get_usuario(session['user_id'])
     return f"<h1>Perfil de {usuario['nome']}</h1><p>Email: {usuario['email']}</p>"
+
+@app.route('/registrar-viagem', methods=['GET', 'POST'])
+@login_required
+def registrar_viagem():
+    """Tela e lógica para registrar viagem"""
+    if request.method == 'POST':
+        modal = request.form.get('modal')
+        origem = request.form.get('origem', '')
+        destino = request.form.get('destino', '')
+        
+        # Registra a viagem e adiciona pontos
+        pontos = db.registrar_viagem(session['user_id'], modal, origem, destino)
+        
+        return redirect(url_for('registrar_viagem', success='true', pontos=pontos))
+    
+    # GET - exibe formulário
+    return render_template('registrar_viagem.html')
 
 # ========== ROTAS DE API (para depois) ==========
 
@@ -156,6 +154,7 @@ def api_usuario():
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
+
 '''from flask import Flask, jsonify, render_template
 
 app = Flask(__name__)
