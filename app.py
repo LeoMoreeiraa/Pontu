@@ -16,7 +16,8 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
-            return redirect(url_for('login', error='required'))
+            flash('Você precisa estar logado para acessar esta página.', 'warning')
+            return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -25,7 +26,6 @@ def login_required(f):
 @app.route('/')
 def splash():
     """Tela inicial (splash screen)"""
-    # Se usuário já está logado, redireciona para home
     if 'user_id' in session:
         return redirect(url_for('home'))
     return render_template('splash.html')
@@ -37,19 +37,16 @@ def login():
         email = request.form.get('email')
         senha = request.form.get('senha')
         
-        # Valida credenciais
         usuario = db.verificar_login(email, senha)
         
         if usuario:
-            # Armazena dados na sessão
             session['user_id'] = usuario['id']
             session['user_nome'] = usuario['nome']
-            session['user_email'] = usuario['email']
             return redirect(url_for('home'))
         else:
-            return redirect(url_for('login', error='credentials'))
+            flash('Email ou senha inválidos.', 'danger')
+            return redirect(url_for('login'))
     
-    # GET - exibe formulário
     return render_template('login.html')
 
 @app.route('/cadastro', methods=['GET', 'POST'])
@@ -58,29 +55,29 @@ def cadastro():
     if request.method == 'POST':
         nome = request.form.get('nome')
         email = request.form.get('email')
-        cpf = request.form.get('cpf').replace('.', '').replace('-', '')  # Remove formatação
+        cpf = request.form.get('cpf', '').replace('.', '').replace('-', '')
         senha = request.form.get('senha')
         confirma_senha = request.form.get('confirma_senha')
         
-        # Validações básicas
         if not all([nome, email, cpf, senha, confirma_senha]):
-            return redirect(url_for('cadastro', error='missing'))
+            flash('Por favor, preencha todos os campos.', 'warning')
+            return redirect(url_for('cadastro'))
         
         if senha != confirma_senha:
-            return redirect(url_for('cadastro', error='password_mismatch'))
-        
+            flash('As senhas não coincidem.', 'danger')
+            return redirect(url_for('cadastro'))
+            
         if len(cpf) != 11:
-            return redirect(url_for('cadastro', error='cpf_invalid'))
-        
-        # Tenta criar usuário
-        user_id = db.criar_usuario(nome, email, cpf, senha)
-        
-        if user_id:
-            return redirect(url_for('cadastro', success='true'))
+            flash('CPF inválido. Deve conter 11 dígitos.', 'danger')
+            return redirect(url_for('cadastro'))
+
+        if db.criar_usuario(nome, email, cpf, senha):
+            flash('Cadastro realizado com sucesso! Faça o login.', 'success')
+            return redirect(url_for('login'))
         else:
-            return redirect(url_for('cadastro', error='exists'))
+            flash('Este email ou CPF já está cadastrado.', 'danger')
+            return redirect(url_for('cadastro'))
     
-    # GET - exibe formulário
     return render_template('cadastro.html')
 
 @app.route('/logout')
@@ -89,7 +86,7 @@ def logout():
     session.clear()
     return redirect(url_for('splash'))
 
-# ========== ROTAS PROTEGIDAS (EXEMPLO - IMPLEMENTAR DEPOIS) ==========
+# ========== ROTAS PROTEGIDAS ==========
 
 @app.route('/home')
 @login_required
@@ -97,15 +94,15 @@ def home():
     """Dashboard principal"""
     usuario = db.get_usuario(session['user_id'])
     return render_template('home.html', 
-                         nome=usuario['nome'].split()[0],  # Apenas primeiro nome
-                         pontos=usuario['pontos'])
+                           nome=usuario['nome'].split()[0],
+                           pontos=usuario['pontos'])
 
 @app.route('/perfil')
 @login_required
 def perfil():
-    """Perfil do usuário (temporário)"""
+    """Exibe o perfil do usuário"""
     usuario = db.get_usuario(session['user_id'])
-    return f"<h1>Perfil de {usuario['nome']}</h1><p>Email: {usuario['email']}</p>"
+    return render_template('perfil.html', usuario=usuario)
 
 @app.route('/registrar-viagem', methods=['GET', 'POST'])
 @login_required
@@ -113,48 +110,76 @@ def registrar_viagem():
     """Tela e lógica para registrar viagem"""
     if request.method == 'POST':
         modal = request.form.get('modal')
-        origem = request.form.get('origem', '')
-        destino = request.form.get('destino', '')
-        
-        # Registra a viagem e adiciona pontos
-        pontos = db.registrar_viagem(session['user_id'], modal, origem, destino)
-        
-        return redirect(url_for('registrar_viagem', success='true', pontos=pontos))
+        # Lógica para registrar e dar pontos...
+        pontos_ganhos = db.registrar_viagem(session['user_id'], modal)
+        flash(f'Viagem registrada! Você ganhou {pontos_ganhos} pontos! 🎉', 'success')
+        return redirect(url_for('home'))
     
-    # GET - exibe formulário
     return render_template('registrar_viagem.html')
 
-# ========== ROTAS DE API (para depois) ==========
+# --- NOVAS ROTAS PARA FEEDBACK E RECOMPENSAS ---
 
-@app.route('/api/registrar-viagem', methods=['POST'])
+@app.route('/feedback', methods=['GET', 'POST'])
 @login_required
-def api_registrar_viagem():
-    """Registra uma viagem e adiciona pontos"""
+def feedback():
+    """Tela para reportar lotação"""
+    user_id = session['user_id']
+    
+    if request.method == 'POST':
+        linha = request.form.get('linha')
+        lotacao = request.form.get('lotacao')
+        
+        if not linha or not lotacao:
+            flash('Por favor, selecione a linha e a lotação.', 'warning')
+        else:
+            db.registrar_feedback(user_id, linha, lotacao)
+            # A mensagem de sucesso é mostrada pelo JavaScript no front-end.
+            # O redirect aqui serve caso o JS falhe.
+            flash('Feedback enviado com sucesso! Obrigado por contribuir.', 'success')
+        return redirect(url_for('feedback'))
+
+    # GET - Exibe a página com as estatísticas
+    total_feedbacks = db.get_total_feedbacks(user_id)
+    feedbacks_semana = db.get_feedbacks_semana(user_id)
+    
+    return render_template('feedback.html', 
+                           total_feedbacks=total_feedbacks, 
+                           feedbacks_semana=feedbacks_semana)
+
+@app.route('/recompensas') # Alterado para /recompensas para melhor semântica
+@login_required
+def recompensas():
+    """Tela para resgatar pontos"""
+    user_id = session['user_id']
+    usuario = db.get_usuario(user_id)
+    historico_resgates = db.get_historico_resgates(user_id)
+    
+    return render_template('resgatar.html', 
+                           pontos=usuario['pontos'], 
+                           resgates=historico_resgates)
+
+# ========== ROTAS DE API ==========
+
+@app.route('/api/resgatar', methods=['POST'])
+@login_required
+def api_resgatar():
+    """Processa o resgate de um benefício"""
     data = request.get_json()
-    modal = data.get('modal')
-    origem = data.get('origem')
-    destino = data.get('destino')
+    user_id = session['user_id']
     
-    pontos = db.registrar_viagem(session['user_id'], modal, origem, destino)
+    beneficio = data.get('beneficio')
+    pontos_custo = data.get('pontos')
     
-    return {
-        'success': True,
-        'pontos_ganhos': pontos,
-        'mensagem': f'Viagem registrada! Você ganhou {pontos} pontos! 🎉'
-    }
-
-@app.route('/api/usuario')
-@login_required
-def api_usuario():
-    """Retorna dados do usuário logado"""
-    usuario = db.get_usuario(session['user_id'])
-    return usuario
+    # Chama a função do banco que faz a lógica de resgate
+    resultado = db.resgatar_beneficio(user_id, beneficio, pontos_custo)
+    
+    return resultado # Retorna o JSON de sucesso ou erro para o front-end
 
 # ========== EXECUÇÃO ==========
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
-
+    
 '''from flask import Flask, jsonify, render_template
 
 app = Flask(__name__)
