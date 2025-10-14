@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pontu - Bem-vindo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <style>
+        .splash-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #4CAF50 0%, #81C784 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .splash-logo {
+            width: 150px;
+            height: 150px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            animation: pulse 2s infinite;
+        }
+
+        .splash-logo img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+        }
+
+        .splash-logo-placeholder {
+            font-size: 60px;
+        }
+
+        .splash-title {
+            font-size: 48px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .splash-subtitle {
+            font-size: 16px;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        .splash-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .splash-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .splash-btn-primary {
+            background: white;
+            color: #4CAF50;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .splash-btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .splash-btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .splash-btn-secondary:hover {
+            background: white;
+            color: #4CAF50;
+            transform: translateY(-3px);
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-container">
+        <div class="splash-logo">
+            <!-- Substitua o emoji por <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Pontu Logo"> -->
+            <span class="splash-logo-placeholder">🌱</span>
+        </div>
+        
+        <h1 class="splash-title">PONTU</h1>
+        <p class="splash-subtitle">Mobilidade sustentável com recompensas</p>
+        
+        <div class="splash-buttons">
+            <a href="/login" class="splash-btn splash-btn-primary">Entrar</a>
+            <a href="/cadastro" class="splash-btn splash-btn-secondary">Criar Conta</a>
+        </div>
+    </div>
+</body>
+</html>
