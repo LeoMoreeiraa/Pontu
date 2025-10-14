@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pontu - Explorar Transportes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <style>
+        .header-explorar {
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+            padding: 15px 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .header-title-explorar {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .content-explorar {
+            padding: 20px 20px 100px;
+        }
+
+        .search-box-explorar {
+            background: white;
+            border-radius: 15px;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .search-icon-explorar {
+            font-size: 20px;
+            color: #757575;
+        }
+
+        .search-input-explorar {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .category-section {
+            margin-bottom: 30px;
+        }
+
+        .category-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #212121;
+            margin-bottom: 15px;
+        }
+
+        .transport-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .transport-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: #212121;
+        }
+
+        .transport-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);
+        }
+
+        .transport-icon-big {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .transport-name {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .transport-desc {
+            font-size: 12px;
+            color: #757575;
+            margin-bottom: 10px;
+        }
+
+        .transport-pontos {
+            background: #E8F5E9;
+            color: #4CAF50;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .info-banner {
+            background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .info-icon {
+            font-size: 36px;
+        }
+
+        .info-text {
+            flex: 1;
+        }
+
+        .info-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1565C0;
+            margin-bottom: 5px;
+        }
+
+        .info-desc {
+            font-size: 13px;
+            color: #1976D2;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header-explorar">
+            <button class="back-btn" onclick="window.location.href='/home'">←</button>
+            <div class="header-title-explorar">Explorar Transportes</div>
+        </div>
+
+        <div class="content-explorar">
+            <!-- Busca -->
+            <div class="search-box-explorar">
+                <span class="search-icon-explorar">🔍</span>
+                <input 
+                    type="text" 
+                    class="search-input-explorar" 
+                    placeholder="Buscar meio de transporte..."
+                    id="searchExplorar"
+                >
+            </div>
+
+            <!-- Banner Informativo -->
+            <div class="info-banner">
+                <div class="info-icon">💡</div>
+                <div class="info-text">
+                    <div class="info-title">Ganhe mais pontos!</div>
+                    <div class="info-desc">
+                        Transportes mais sustentáveis como bicicleta e patinete concedem +50% de pontos bonus!
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transporte Público -->
+            <div class="category-section">
+                <div class="category-title">🚇 Transporte Público</div>
+                <div class="transport-grid">
+                    <div class="transport-card" onclick="window.location.href='/rotas'">
+                        <div class="transport-icon-big">🚇</div>
+                        <div class="transport-name">Metrô</div>
+                        <div class="transport-desc">Linhas 1, 2, 3, 4, 5</div>
+                        <div class="transport-pontos">+10 pts/viagem</div>
+                    </div>
+
+                    <div class="transport-card" onclick="window.location.href='/rotas'">
+                        <div class="transport-icon-big">🚆</div>
+                        <div class="transport-name">Trem (CPTM)</div>
+                        <div class="transport-desc">Linhas 7, 8, 9, 10</div>
+                        <div class="transport-pontos">+10 pts/viagem</div>
+                    </div>
+
+                    <div class="transport-card" onclick="window.location.href='/rotas'">
+                        <div class="transport-icon-big">🚌</div>
+                        <div class="transport-name">Ônibus</div>
+                        <div class="transport-desc">SPTrans Municipal</div>
+                        <div class="transport-pontos">+12 pts/viagem</div>
+                    </div>
+
+                    <div class="transport-card" onclick="alert('🚧 Em breve!')">
+                        <div class="transport-icon-big">🚊</div>
+                        <div class="transport-name">VLT</div>
+                        <div class="transport-desc">Em breve</div>
+                        <div class="transport-pontos">+10 pts/viagem</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Micromobilidade -->
+            <div class="category-section">
+                <div class="category-title">🚴 Micromobilidade</div>
+                <div class="transport-grid">
+                    <div class="transport-card" onclick="window.location.href='/registrar-viagem'">
+                        <div class="transport-icon-big">🚴</div>
+                        <div class="transport-name">Bicicleta</div>
+                        <div class="transport-desc">Itaú Bike, Tembici</div>
+                        <div class="transport-pontos">+15 pts/viagem</div>
+                    </div>
+
+                    <div class="transport-card" onclick="window.location.href='/registrar-viagem'">
+                        <div class="transport-icon-big">🛴</div>
+                        <div class="transport-name">Patinete</div>
+                        <div class="transport-desc">Lime, Grin, Yellow</div>
+                        <div class="transport-pontos">+15 pts/viagem</div>
+                    </div>
+
+                    <div class="transport-card" onclick="alert('🚧 Em breve!')">
+                        <div class="transport-icon-big">🛹</div>
+                        <div class="transport-name">Skate</div>
+                        <div class="transport-desc">Em breve</div>
+                        <div class="transport-pontos">+15 pts/viagem</div>
+                    </div>
+
+                    <div class="transport-card" onclick="alert('🚧 Em breve!')">
+                        <div class="transport-icon-big">🚶</div>
+                        <div class="transport-name">Caminhada</div>
+                        <div class="transport-desc">A pé</div>
+                        <div class="transport-pontos">+5 pts/km</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compartilhado -->
+            <div class="category-section">
+                <div class="category-title">🤝 Transporte Compartilhado</div>
+                <div class="transport-grid">
+                    <div class="transport-card" onclick="alert('🚧 Em breve!')">
+                        <div class="transport-icon-big">🚗</div>
+                        <div class="transport-name">Carona</div>
+                        <div class="transport-desc">BlaBlaCar, Waze</div>
+                        <div class="transport-pontos">+8 pts/viagem</div>
+                    </div>
+
+                    <div class="transport-card" onclick="alert('🚧 Em breve!')">
+                        <div class="transport-icon-big">🚕</div>
+                        <div class="transport-name">Uber Pool</div>
+                        <div class="transport-desc">Viagem compartilhada</div>
+                        <div class="transport-pontos">+7 pts/viagem</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navegação Inferior -->
+        <div class="bottom-nav-home">
+            <a href="/home" class="nav-item-home">
+                <span class="nav-item-icon">🏠</span>
+                <span class="nav-item-label">Início</span>
+            </a>
+            
+            <a href="/rotas" class="nav-item-home">
+                <span class="nav-item-icon">🗺️</span>
+                <span class="nav-item-label">Rotas</span>
+            </a>
+            
+            <a href="/resgatar" class="nav-item-home">
+                <span class="nav-item-icon">🎁</span>
+                <span class="nav-item-label">Resgatar</span>
+            </a>
+            
+            <a href="/perfil" class="nav-item-home">
+                <span class="nav-item-icon">👤</span>
+                <span class="nav-item-label">Perfil</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Busca simples
+        document.getElementById('searchExplorar').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.transport-card');
+            
+            cards.forEach(card => {
+                const name = card.querySelector('.transport-name').textContent.toLowerCase();
+                const desc = card.querySelector('.transport-desc').textContent.toLowerCase();
+                
+                if (name.includes(query) || desc.includes(query)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

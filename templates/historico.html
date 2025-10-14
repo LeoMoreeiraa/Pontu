@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pontu - Histórico</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <style>
+        .header-historico {
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+            padding: 15px 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .header-title-historico {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .content-historico {
+            padding: 20px 20px 100px;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .stat-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #4CAF50;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #757575;
+        }
+
+        .section-title-hist {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212121;
+            margin-bottom: 15px;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #E0E0E0;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -24px;
+            top: 18px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4CAF50;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #4CAF50;
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .timeline-modal {
+            font-size: 24px;
+        }
+
+        .timeline-pontos {
+            background: #E8F5E9;
+            color: #4CAF50;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .timeline-info {
+            font-size: 14px;
+            color: #212121;
+            margin-bottom: 5px;
+        }
+
+        .timeline-rota {
+            font-size: 12px;
+            color: #757575;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+
+        .timeline-data {
+            font-size: 11px;
+            color: #9E9E9E;
+        }
+
+        .empty-state-hist {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9E9E9E;
+        }
+
+        .empty-icon-hist {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding: 5px 0;
+        }
+
+        .filter-tab {
+            background: #F5F5F5;
+            border: 2px solid transparent;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-tab.active {
+            background: #E8F5E9;
+            border-color: #4CAF50;
+            color: #4CAF50;
+            font-weight: 600;
+        }
+
+        .month-divider {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4CAF50;
+            margin: 25px 0 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .month-divider::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: #E8F5E9;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header-historico">
+            <button class="back-btn" onclick="window.location.href='/home'">←</button>
+            <div class="header-title-historico">Histórico de Viagens</div>
+        </div>
+
+        <div class="content-historico">
+            <!-- Cards de Estatísticas -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-icon">🚇</div>
+                    <div class="stat-value">{{ total_viagens }}</div>
+                    <div class="stat-label">Viagens</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-value">{{ total_pontos_ganhos }}</div>
+                    <div class="stat-label">Pontos Ganhos</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">🌱</div>
+                    <div class="stat-value">{{ co2_economizado }}kg</div>
+                    <div class="stat-label">CO₂ Economizado</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-value">{{ dias_ativos }}</div>
+                    <div class="stat-label">Dias Ativos</div>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="filter-tabs">
+                <div class="filter-tab active" onclick="filtrarViagens('todas')">
+                    Todas
+                </div>
+                <div class="filter-tab" onclick="filtrarViagens('metro')">
+                    🚇 Metrô
+                </div>
+                <div class="filter-tab" onclick="filtrarViagens('trem')">
+                    🚆 Trem
+                </div>
+                <div class="filter-tab" onclick="filtrarViagens('onibus')">
+                    🚌 Ônibus
+                </div>
+                <div class="filter-tab" onclick="filtrarViagens('bike')">
+                    🚴 Bike
+                </div>
+                <div class="filter-tab" onclick="filtrarViagens('patinete')">
+                    🛴 Patinete
+                </div>
+            </div>
+
+            {% if viagens and viagens|length > 0 %}
+                <!-- Timeline de Viagens -->
+                <div class="section-title-hist">📍 Suas Viagens</div>
+                
+                <div class="timeline" id="timelineContainer">
+                    {% set current_month = '' %}
+                    {% for viagem in viagens %}
+                        {% set viagem_month = viagem.data[:7] %}
+                        {% if viagem_month != current_month %}
+                            {% set current_month = viagem_month %}
+                            <div class="month-divider">
+                                {{ viagem.mes_ano }}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="timeline-item" data-modal="{{ viagem.modal }}">
+                            <div class="timeline-header">
+                                <span class="timeline-modal">{{ viagem.icone }}</span>
+                                <span class="timeline-pontos">+{{ viagem.pontos }} pts</span>
+                            </div>
+                            
+                            <div class="timeline-info">
+                                <strong>{{ viagem.modal_nome }}</strong>
+                            </div>
+                            
+                            {% if viagem.origem and viagem.destino %}
+                            <div class="timeline-rota">
+                                📍 {{ viagem.origem }} → {{ viagem.destino }}
+                            </div>
+                            {% endif %}
+                            
+                            <div class="timeline-data">
+                                {{ viagem.data_formatada }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <!-- Estado Vazio -->
+                <div class="empty-state-hist">
+                    <div class="empty-icon-hist">📊</div>
+                    <div style="font-size: 20px; font-weight: 600; color: #212121; margin-bottom: 10px;">
+                        Nenhuma viagem registrada
+                    </div>
+                    <div style="font-size: 14px; color: #757575; margin-bottom: 25px;">
+                        Comece a registrar suas viagens sustentáveis e acumule pontos!
+                    </div>
+                    <a href="/registrar-viagem" class="btn btn-primary">
+                        Registrar Primeira Viagem
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Navegação Inferior -->
+        <div class="bottom-nav-home">
+            <a href="/home" class="nav-item-home">
+                <span class="nav-item-icon">🏠</span>
+                <span class="nav-item-label">Início</span>
+            </a>
+            
+            <a href="/rotas" class="nav-item-home">
+                <span class="nav-item-icon">🗺️</span>
+                <span class="nav-item-label">Rotas</span>
+            </a>
+            
+            <a href="/resgatar" class="nav-item-home">
+                <span class="nav-item-icon">🎁</span>
+                <span class="nav-item-label">Resgatar</span>
+            </a>
+            
+            <a href="/perfil" class="nav-item-home">
+                <span class="nav-item-icon">👤</span>
+                <span class="nav-item-label">Perfil</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function filtrarViagens(tipo) {
+            // Remove active de todos
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Adiciona active no clicado
+            event.target.classList.add('active');
+            
+            // Filtra viagens
+            const items = document.querySelectorAll('.timeline-item');
+            const dividers = document.querySelectorAll('.month-divider');
+            
+            items.forEach(item => {
+                const modal = item.dataset.modal;
+                if (tipo === 'todas' || modal === tipo) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Mostra/esconde divisores baseado em itens visíveis
+            dividers.forEach(divider => {
+                let hasVisibleItems = false;
+                let nextElement = divider.nextElementSibling;
+                
+                while (nextElement && !nextElement.classList.contains('month-divider')) {
+                    if (nextElement.classList.contains('timeline-item') && 
+                        nextElement.style.display !== 'none') {
+                        hasVisibleItems = true;
+                        break;
+                    }
+                    nextElement = nextElement.nextElementSibling;
+                }
+                
+                divider.style.display = hasVisibleItems ? 'flex' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>

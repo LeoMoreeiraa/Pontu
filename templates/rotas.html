@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pontu - Consultar Rotas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .header-rotas {
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+            padding: 15px 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            z-index: 1000;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .header-title-rotas {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        #map {
+            height: 400px;
+            width: 100%;
+            z-index: 1;
+        }
+
+        .controls-section {
+            padding: 15px 20px;
+            background: white;
+            border-bottom: 2px solid #F5F5F5;
+        }
+
+        .search-rotas {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .search-input-rotas {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #E0E0E0;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .btn-search {
+            padding: 12px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .filters {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 5px 0;
+        }
+
+        .filter-chip {
+            background: #F5F5F5;
+            border: 2px solid transparent;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-chip.active {
+            background: #E8F5E9;
+            border-color: #4CAF50;
+            color: #4CAF50;
+            font-weight: 600;
+        }
+
+        .linhas-section {
+            padding: 15px 20px 100px;
+        }
+
+        .section-title-rotas {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212121;
+            margin-bottom: 15px;
+        }
+
+        .linha-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .linha-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.15);
+        }
+
+        .linha-icon-badge {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .linha-icon-badge.metro {
+            background: #E3F2FD;
+        }
+
+        .linha-icon-badge.trem {
+            background: #FFF3E0;
+        }
+
+        .linha-icon-badge.onibus {
+            background: #E8F5E9;
+        }
+
+        .linha-info {
+            flex: 1;
+        }
+
+        .linha-nome {
+            font-size: 15px;
+            font-weight: 600;
+            color: #212121;
+            margin-bottom: 3px;
+        }
+
+        .linha-desc {
+            font-size: 12px;
+            color: #757575;
+        }
+
+        .linha-status {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+        }
+
+        .lotacao-badge {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .lotacao-badge.vazio {
+            background: #E8F5E9;
+            color: #4CAF50;
+        }
+
+        .lotacao-badge.moderado {
+            background: #FFF8E1;
+            color: #F57C00;
+        }
+
+        .lotacao-badge.cheio {
+            background: #FFEBEE;
+            color: #F44336;
+        }
+
+        .btn-favoritar {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .detalhes-linha {
+            display: none;
+            background: #F5F5F5;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+
+        .detalhes-linha.show {
+            display: block;
+        }
+
+        .estacao-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #E0E0E0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .estacao-item:last-child {
+            border-bottom: none;
+        }
+
+        .estacao-nome {
+            font-size: 14px;
+            color: #212121;
+        }
+
+        .tempo-chegada {
+            font-size: 12px;
+            color: #4CAF50;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header-rotas">
+            <button class="back-btn" onclick="window.location.href='/home'">←</button>
+            <div class="header-title-rotas">Consultar Rotas</div>
+        </div>
+
+        <!-- Mapa -->
+        <div id="map"></div>
+
+        <!-- Controles -->
+        <div class="controls-section">
+            <div class="search-rotas">
+                <input 
+                    type="text" 
+                    class="search-input-rotas" 
+                    id="searchInput"
+                    placeholder="Buscar linha ou estação..."
+                >
+                <button class="btn-search" onclick="buscarRota()">🔍</button>
+            </div>
+            
+            <div class="filters">
+                <div class="filter-chip active" data-filter="all" onclick="filtrarLinhas('all')">
+                    Todas
+                </div>
+                <div class="filter-chip" data-filter="metro" onclick="filtrarLinhas('metro')">
+                    🚇 Metrô
+                </div>
+                <div class="filter-chip" data-filter="trem" onclick="filtrarLinhas('trem')">
+                    🚆 Trem
+                </div>
+                <div class="filter-chip" data-filter="onibus" onclick="filtrarLinhas('onibus')">
+                    🚌 Ônibus
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Linhas -->
+        <div class="linhas-section">
+            <div class="section-title-rotas">📍 Linhas Disponíveis</div>
+            
+            <div id="linhasContainer">
+                <!-- Linha 1 - Azul -->
+                <div class="linha-item" data-tipo="metro" onclick="toggleDetalhes(this)">
+                    <div class="linha-icon-badge metro">🚇</div>
+                    <div class="linha-info">
+                        <div class="linha-nome">Linha 1 - Azul</div>
+                        <div class="linha-desc">Jabaquara ↔ Tucuruvi</div>
+                    </div>
+                    <div class="linha-status">
+                        <span class="lotacao-badge moderado">
+                            <span>🟡</span> Moderado
+                        </span>
+                        <button class="btn-favoritar" onclick="event.stopPropagation(); favoritar('Linha 1 - Azul', 'Jabaquara', 'Tucuruvi')">
+                            ⭐
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Linha 2 - Verde -->
+                <div class="linha-item" data-tipo="metro" onclick="toggleDetalhes(this)">
+                    <div class="linha-icon-badge metro">🚇</div>
+                    <div class="linha-info">
+                        <div class="linha-nome">Linha 2 - Verde</div>
+                        <div class="linha-desc">Vila Prudente ↔ Vila Madalena</div>
+                    </div>
+                    <div class="linha-status">
+                        <span class="lotacao-badge vazio">
+                            <span>🟢</span> Vazio
+                        </span>
+                        <button class="btn-favoritar" onclick="event.stopPropagation(); favoritar('Linha 2 - Verde', 'Vila Prudente', 'Vila Madalena')">
+                            ⭐
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Linha 3 - Vermelha -->
+                <div class="linha-item" data-tipo="metro" onclick="toggleDetalhes(this)">
+                    <div class="linha-icon-badge metro">🚇</div>
+                    <div class="linha-info">
+                        <div class="linha-nome">Linha 3 - Vermelha</div>
+                        <div class="linha-desc">Corinthians-Itaquera ↔ Palmeiras-Barra Funda</div>
+                    </div>
+                    <div class="linha-status">
+                        <span class="lotacao-badge cheio">
+                            <span>🔴</span> Cheio
+                        </span>
+                        <button class="btn-favoritar" onclick="event.stopPropagation(); favoritar('Linha 3 - Vermelha', 'Corinthians-Itaquera', 'Palmeiras-Barra Funda')">
+                            ⭐
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Linha 7 - Rubi -->
+                <div class="linha-item" data-tipo="trem" onclick="toggleDetalhes(this)">
+                    <div class="linha-icon-badge trem">🚆</div>
+                    <div class="linha-info">
+                        <div class="linha-nome">Linha 7 - Rubi (CPTM)</div>
+                        <div class="linha-desc">Luz ↔ Jundiaí</div>
+                    </div>
+                    <div class="linha-status">
+                        <span class="lotacao-badge vazio">
+                            <span>🟢</span> Vazio
+                        </span>
+                        <button class="btn-favoritar" onclick="event.stopPropagation(); favoritar('Linha 7 - Rubi', 'Luz', 'Jundiaí')">
+                            ⭐
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Linha 8 - Diamante -->
+                <div class="linha-item" data-tipo="trem" onclick="toggleDetalhes(this)">
+                    <div class="linha-icon-badge trem">🚆</div>
+                    <div class="linha-info">
+                        <div class="linha-nome">Linha 8 - Diamante (CPTM)</div>
+                        <div class="linha-desc">Júlio Prestes ↔ Amador Bueno</div>
+                    </div>
+                    <div class="linha-status">
+                        <span class="lotacao-badge moderado">
+                            <span>🟡</span> Moderado
+                        </span>
+                        <button class="btn-favoritar" onclick="event.stopPropagation(); favoritar('Linha 8 - Diamante', 'Júlio Prestes', 'Amador Bueno')">
+                            ⭐
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Ônibus Municipal -->
+                <div class="linha-item" data-tipo="onibus" onclick="toggleDetalhes(this)">
+                    <div class="linha-icon-badge onibus">🚌</div>
+                    <div class="linha-info">
+                        <div class="linha-nome">Ônibus 875M-10</div>
+                        <div class="linha-desc">Terminal Pinheiros ↔ Metrô Sé</div>
+                    </div>
+                    <div class="linha-status">
+                        <span class="lotacao-badge moderado">
+                            <span>🟡</span> Moderado
+                        </span>
+                        <button class="btn-favoritar" onclick="event.stopPropagation(); favoritar('Ônibus 875M-10', 'Terminal Pinheiros', 'Metrô Sé')">
+                            ⭐
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navegação Inferior -->
+        <div class="bottom-nav-home">
+            <a href="/home" class="nav-item-home">
+                <span class="nav-item-icon">🏠</span>
+                <span class="nav-item-label">Início</span>
+            </a>
+            
+            <a href="/rotas" class="nav-item-home active">
+                <span class="nav-item-icon">🗺️</span>
+                <span class="nav-item-label">Rotas</span>
+            </a>
+            
+            <a href="/resgatar" class="nav-item-home">
+                <span class="nav-item-icon">🎁</span>
+                <span class="nav-item-label">Resgatar</span>
+            </a>
+            
+            <a href="/perfil" class="nav-item-home">
+                <span class="nav-item-icon">👤</span>
+                <span class="nav-item-label">Perfil</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script>
+        // Inicializa o mapa (São Paulo)
+        const map = L.map('map').setView([-23.5505, -46.6333], 12);
+
+        // Adiciona camada de tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Marcadores de estações mockadas
+        const estacoes = [
+            { nome: 'Estação Sé', lat: -23.5505, lng: -46.6333, lotacao: 'cheio' },
+            { nome: 'Estação República', lat: -23.5437, lng: -46.6428, lotacao: 'moderado' },
+            { nome: 'Estação Paulista', lat: -23.5613, lng: -46.6565, lotacao: 'vazio' },
+            { nome: 'Estação Consolação', lat: -23.5564, lng: -46.6605, lotacao: 'moderado' },
+            { nome: 'Estação Luz', lat: -23.5345, lng: -46.6354, lotacao: 'vazio' }
+        ];
+
+        // Adiciona marcadores ao mapa
+        estacoes.forEach(estacao => {
+            const cor = estacao.lotacao === 'vazio' ? 'green' : 
+                       estacao.lotacao === 'moderado' ? 'orange' : 'red';
+            
+            const marker = L.circleMarker([estacao.lat, estacao.lng], {
+                radius: 8,
+                fillColor: cor,
+                color: '#fff',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.8
+            }).addTo(map);
+            
+            marker.bindPopup(`<b>${estacao.nome}</b><br>Lotação: ${estacao.lotacao}`);
+        });
+
+        // Filtrar linhas
+        function filtrarLinhas(tipo) {
+            // Remove active de todos
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            
+            // Adiciona active no clicado
+            event.target.classList.add('active');
+            
+            // Filtra linhas
+            document.querySelectorAll('.linha-item').forEach(linha => {
+                const tipoLinha = linha.dataset.tipo;
+                if (tipo === 'all' || tipoLinha === tipo) {
+                    linha.style.display = 'flex';
+                } else {
+                    linha.style.display = 'none';
+                }
+            });
+        }
+
+        // Toggle detalhes
+        function toggleDetalhes(element) {
+            // Remove detalhes abertos
+            document.querySelectorAll('.detalhes-linha').forEach(det => {
+                if (det.parentElement !== element) {
+                    det.remove();
+                }
+            });
+            
+            // Verifica se já tem detalhes
+            let detalhes = element.querySelector('.detalhes-linha');
+            
+            if (detalhes) {
+                detalhes.remove();
+            } else {
+                // Cria detalhes mockados
+                detalhes = document.createElement('div');
+                detalhes.className = 'detalhes-linha show';
+                detalhes.innerHTML = `
+                    <div style="font-weight: 600; margin-bottom: 10px;">Próximas Chegadas:</div>
+                    <div class="estacao-item">
+                        <span class="estacao-nome">Próximo veículo</span>
+                        <span class="tempo-chegada">3 min 🟢</span>
+                    </div>
+                    <div class="estacao-item">
+                        <span class="estacao-nome">Segundo veículo</span>
+                        <span class="tempo-chegada">8 min 🟡</span>
+                    </div>
+                    <div class="estacao-item">
+                        <span class="estacao-nome">Terceiro veículo</span>
+                        <span class="tempo-chegada">15 min 🔴</span>
+                    </div>
+                `;
+                element.appendChild(detalhes);
+            }
+        }
+
+        // Buscar rota
+        function buscarRota() {
+            const query = document.getElementById('searchInput').value;
+            if (query.trim()) {
+                alert(`🔍 Buscando por: "${query}"\n\n(Função de busca em desenvolvimento)`);
+            }
+        }
+
+        // Favoritar rota
+        function favoritar(nome, origem, destino) {
+            fetch('/api/favoritar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    nome_rota: nome,
+                    origem: origem,
+                    destino: destino
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('⭐ Rota favoritada com sucesso!');
+                    event.target.textContent = '⭐';
+                }
+            })
+            .catch(error => {
+                alert('Erro ao favoritar. Tente novamente.');
+            });
+        }
+    </script>
+</body>
+</html>

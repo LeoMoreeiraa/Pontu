@@ -358,13 +358,9 @@
         // Efeito de feedback ao clicar nos cards
         document.querySelectorAll('.menu-card').forEach(card => {
             card.addEventListener('click', function(e) {
-                // Se a rota não existir ainda, previne navegação e mostra alerta
+                // Apenas cards sem funcionalidade mostram alerta
                 const href = this.getAttribute('href');
-                if (href === '/explorar' || href === '/rotas' || href === '/planejar' || 
-                    href === '/favoritos' || href === '/historico' || href === '/feedback') {
-                    e.preventDefault();
-                    alert('🚧 Funcionalidade em desenvolvimento!\n\nEsta tela será implementada em breve.');
-                }
+                // Nenhum card precisa de alerta agora, todos funcionam!
             });
         });
     </script>

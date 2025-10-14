@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pontu - Favoritos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <style>
+        .header-favoritos {
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+            padding: 15px 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .header-title-favoritos {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .content-favoritos {
+            padding: 20px 20px 100px;
+        }
+
+        .empty-state-favoritos {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9E9E9E;
+        }
+
+        .empty-icon-favoritos {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .empty-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #212121;
+            margin-bottom: 10px;
+        }
+
+        .empty-desc {
+            font-size: 14px;
+            color: #757575;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .btn-add-favorito {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .favoritos-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .favorito-card {
+            background: white;
+            border-radius: 15px;
+            padding: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .favorito-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+        }
+
+        .favorito-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .favorito-info {
+            flex: 1;
+        }
+
+        .favorito-nome {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212121;
+            margin-bottom: 5px;
+        }
+
+        .favorito-rota {
+            font-size: 13px;
+            color: #757575;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .favorito-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            padding: 5px;
+            transition: transform 0.2s;
+        }
+
+        .btn-icon:hover {
+            transform: scale(1.2);
+        }
+
+        .btn-icon.delete:hover {
+            filter: brightness(0.8);
+        }
+
+        .section-header-fav {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212121;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .count-badge {
+            background: #E8F5E9;
+            color: #4CAF50;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .quick-actions {
+            background: #F5F5F5;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .quick-actions-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #212121;
+            margin-bottom: 10px;
+        }
+
+        .quick-btn {
+            background: white;
+            border: 2px solid #E0E0E0;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            text-align: left;
+            margin-bottom: 8px;
+        }
+
+        .quick-btn:hover {
+            border-color: #4CAF50;
+            background: #E8F5E9;
+        }
+
+        .modal-delete {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-delete.show {
+            display: flex;
+        }
+
+        .modal-delete-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 320px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .modal-delete-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+
+        .modal-delete-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #212121;
+            margin-bottom: 10px;
+        }
+
+        .modal-delete-desc {
+            font-size: 14px;
+            color: #757575;
+            margin-bottom: 20px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 12px;
+            background: #F5F5F5;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-confirm {
+            flex: 1;
+            padding: 12px;
+            background: #F44336;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header-favoritos">
+            <button class="back-btn" onclick="window.location.href='/home'">←</button>
+            <div class="header-title-favoritos">Meus Favoritos</div>
+        </div>
+
+        <div class="content-favoritos">
+            {% if favoritos and favoritos|length > 0 %}
+                <!-- Ações Rápidas -->
+                <div class="quick-actions">
+                    <div class="quick-actions-title">⚡ Ações Rápidas</div>
+                    <button class="quick-btn" onclick="window.location.href='/rotas'">
+                        🗺️ Adicionar nova rota favorita
+                    </button>
+                    <button class="quick-btn" onclick="compartilharFavoritos()">
+                        📤 Compartilhar meus favoritos
+                    </button>
+                </div>
+
+                <!-- Lista de Favoritos -->
+                <div class="section-header-fav">
+                    <span>⭐ Suas Rotas</span>
+                    <span class="count-badge">{{ favoritos|length }}</span>
+                </div>
+
+                <div class="favoritos-list">
+                    {% for favorito in favoritos %}
+                    <div class="favorito-card" id="fav-{{ favorito.id }}">
+                        <div class="favorito-icon">⭐</div>
+                        <div class="favorito-info">
+                            <div class="favorito-nome">{{ favorito.nome }}</div>
+                            <div class="favorito-rota">
+                                📍 {{ favorito.origem }} → {{ favorito.destino }}
+                            </div>
+                        </div>
+                        <div class="favorito-actions">
+                            <button class="btn-icon" onclick="usarRota('{{ favorito.nome }}', '{{ favorito.origem }}', '{{ favorito.destino }}')">
+                                🗺️
+                            </button>
+                            <button class="btn-icon delete" onclick="confirmarDelete({{ favorito.id }}, '{{ favorito.nome }}')">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+            {% else %}
+                <!-- Estado Vazio -->
+                <div class="empty-state-favoritos">
+                    <div class="empty-icon-favoritos">⭐</div>
+                    <div class="empty-title">Nenhum favorito ainda</div>
+                    <div class="empty-desc">
+                        Adicione suas rotas mais usadas aos favoritos para acessá-las rapidamente!
+                    </div>
+                    <a href="/rotas" class="btn-add-favorito">
+                        Explorar Rotas
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Modal de Confirmação de Delete -->
+        <div class="modal-delete" id="modalDelete">
+            <div class="modal-delete-content">
+                <div class="modal-delete-icon">⚠️</div>
+                <div class="modal-delete-title">Remover Favorito?</div>
+                <div class="modal-delete-desc" id="deleteDesc">
+                    Tem certeza que deseja remover esta rota dos favoritos?
+                </div>
+                <div class="modal-buttons">
+                    <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+                    <button class="btn-confirm" id="btnConfirmDelete">Remover</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navegação Inferior -->
+        <div class="bottom-nav-home">
+            <a href="/home" class="nav-item-home">
+                <span class="nav-item-icon">🏠</span>
+                <span class="nav-item-label">Início</span>
+            </a>
+            
+            <a href="/rotas" class="nav-item-home">
+                <span class="nav-item-icon">🗺️</span>
+                <span class="nav-item-label">Rotas</span>
+            </a>
+            
+            <a href="/resgatar" class="nav-item-home">
+                <span class="nav-item-icon">🎁</span>
+                <span class="nav-item-label">Resgatar</span>
+            </a>
+            
+            <a href="/perfil" class="nav-item-home">
+                <span class="nav-item-icon">👤</span>
+                <span class="nav-item-label">Perfil</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        let favoritoParaRemover = null;
+
+        function usarRota(nome, origem, destino) {
+            // Redireciona para tela de rotas com a rota selecionada
+            alert(`🗺️ Abrindo rota:\n\n${nome}\n${origem} → ${destino}\n\n(Redirecionamento em desenvolvimento)`);
+            // window.location.href = `/rotas?rota=${encodeURIComponent(nome)}`;
+        }
+
+        function confirmarDelete(id, nome) {
+            favoritoParaRemover = id;
+            document.getElementById('deleteDesc').textContent = 
+                `Tem certeza que deseja remover "${nome}" dos favoritos?`;
+            document.getElementById('modalDelete').classList.add('show');
+            
+            // Configura botão de confirmar
+            document.getElementById('btnConfirmDelete').onclick = function() {
+                removerFavorito(id);
+            };
+        }
+
+        function fecharModal() {
+            document.getElementById('modalDelete').classList.remove('show');
+            favoritoParaRemover = null;
+        }
+
+        function removerFavorito(id) {
+            fetch(`/api/remover-favorito/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove o card visualmente
+                    const card = document.getElementById(`fav-${id}`);
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateX(-100%)';
+                    
+                    setTimeout(() => {
+                        card.remove();
+                        
+                        // Se não há mais favoritos, recarrega a página
+                        const remaining = document.querySelectorAll('.favorito-card').length;
+                        if (remaining === 0) {
+                            window.location.reload();
+                        } else {
+                            // Atualiza contador
+                            const badge = document.querySelector('.count-badge');
+                            if (badge) {
+                                badge.textContent = remaining;
+                            }
+                        }
+                    }, 300);
+                    
+                    fecharModal();
+                } else {
+                    alert('Erro ao remover favorito.');
+                }
+            })
+            .catch(error => {
+                alert('Erro ao remover favorito. Tente novamente.');
+            });
+        }
+
+        function compartilharFavoritos() {
+            alert('📤 Funcionalidade de compartilhamento em desenvolvimento!\n\nEm breve você poderá compartilhar suas rotas favoritas com amigos.');
+        }
+    </script>
+</body>
+</html>
