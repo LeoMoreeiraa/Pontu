@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pontu - Feedback</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <style>
+        .header-feedback {
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+            padding: 15px 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .header-title-feedback {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .content-feedback {
+            padding: 30px 20px 100px;
+        }
+
+        .intro-box {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .intro-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .intro-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #212121;
+            margin-bottom: 8px;
+        }
+
+        .intro-desc {
+            font-size: 14px;
+            color: #757575;
+            line-height: 1.5;
+        }
+
+        .form-feedback {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .linha-select-container {
+            margin-bottom: 25px;
+        }
+
+        .linhas-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .linha-card {
+            background: #F5F5F5;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .linha-card:hover {
+            background: #E8F5E9;
+            border-color: #81C784;
+        }
+
+        .linha-card.selected {
+            background: #E8F5E9;
+            border-color: #4CAF50;
+        }
+
+        .linha-icon {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .linha-nome {
+            font-size: 13px;
+            font-weight: 600;
+            color: #212121;
+        }
+
+        .lotacao-container {
+            margin-bottom: 25px;
+        }
+
+        .lotacao-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212121;
+            margin-bottom: 15px;
+        }
+
+        .lotacao-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .lotacao-btn {
+            flex: 1;
+            padding: 20px 10px;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            background: #F5F5F5;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .lotacao-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .lotacao-btn.selected {
+            border-color: currentColor;
+        }
+
+        .lotacao-btn.vazio {
+            color: #4CAF50;
+        }
+
+        .lotacao-btn.vazio.selected {
+            background: #E8F5E9;
+        }
+
+        .lotacao-btn.moderado {
+            color: #FF9800;
+        }
+
+        .lotacao-btn.moderado.selected {
+            background: #FFF3E0;
+        }
+
+        .lotacao-btn.cheio {
+            color: #F44336;
+        }
+
+        .lotacao-btn.cheio.selected {
+            background: #FFEBEE;
+        }
+
+        .lotacao-icon {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        .lotacao-label {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .success-feedback {
+            background: #E8F5E9;
+            border: 2px solid #4CAF50;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            display: none;
+        }
+
+        .success-feedback.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .success-feedback-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+
+        .success-feedback-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2E7D32;
+            margin-bottom: 10px;
+        }
+
+        .success-feedback-desc {
+            font-size: 14px;
+            color: #4CAF50;
+        }
+
+        .stats-box {
+            background: #E3F2FD;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 25px;
+        }
+
+        .stats-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1565C0;
+            margin-bottom: 10px;
+        }
+
+        .stats-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(21, 101, 192, 0.1);
+        }
+
+        .stats-item:last-child {
+            border-bottom: none;
+        }
+
+        .stats-label {
+            font-size: 13px;
+            color: #1976D2;
+        }
+
+        .stats-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1565C0;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header-feedback">
+            <button class="back-btn" onclick="window.location.href='/home'">←</button>
+            <div class="header-title-feedback">Reportar Lotação</div>
+        </div>
+
+        <div class="content-feedback">
+            <!-- Intro -->
+            <div class="intro-box">
+                <div class="intro-icon">💬</div>
+                <div class="intro-title">Ajude outros usuários!</div>
+                <div class="intro-desc">
+                    Informe a lotação atual do transporte que você está usando. 
+                    Seu feedback ajuda a comunidade a planejar melhores rotas.
+                </div>
+            </div>
+
+            <!-- Card de Sucesso (oculto) -->
+            <div class="success-feedback" id="successFeedback">
+                <div class="success-feedback-icon">✅</div>
+                <div class="success-feedback-title">Feedback Enviado!</div>
+                <div class="success-feedback-desc">Obrigado por contribuir com a comunidade Pontu</div>
+            </div>
+
+            <!-- Formulário -->
+            <div class="form-feedback" id="formContainer">
+                <form id="feedbackForm" method="POST" action="/feedback">
+                    <!-- Seleção de Linha -->
+                    <div class="linha-select-container">
+                        <label class="form-label">Qual linha você está usando?</label>
+                        
+                        <div class="linhas-grid">
+                            <div class="linha-card" data-linha="Linha 1-Azul">
+                                <div class="linha-icon">🚇</div>
+                                <div class="linha-nome">Linha 1-Azul</div>
+                            </div>
+                            
+                            <div class="linha-card" data-linha="Linha 2-Verde">
+                                <div class="linha-icon">🚇</div>
+                                <div class="linha-nome">Linha 2-Verde</div>
+                            </div>
+                            
+                            <div class="linha-card" data-linha="Linha 3-Vermelha">
+                                <div class="linha-icon">🚇</div>
+                                <div class="linha-nome">Linha 3-Vermelha</div>
+                            </div>
+                            
+                            <div class="linha-card" data-linha="Linha 7-Rubi">
+                                <div class="linha-icon">🚆</div>
+                                <div class="linha-nome">Linha 7-Rubi</div>
+                            </div>
+                            
+                            <div class="linha-card" data-linha="Linha 8-Diamante">
+                                <div class="linha-icon">🚆</div>
+                                <div class="linha-nome">Linha 8-Diamante</div>
+                            </div>
+                            
+                            <div class="linha-card" data-linha="Ônibus Municipal">
+                                <div class="linha-icon">🚌</div>
+                                <div class="linha-nome">Ônibus</div>
+                            </div>
+                        </div>
+                        
+                        <input type="hidden" name="linha" id="linhaInput" required>
+                    </div>
+
+                    <!-- Seleção de Lotação -->
+                    <div class="lotacao-container">
+                        <div class="lotacao-title">Como está a lotação?</div>
+                        
+                        <div class="lotacao-options">
+                            <div class="lotacao-btn vazio" data-lotacao="vazio">
+                                <div class="lotacao-icon">🟢</div>
+                                <div class="lotacao-label">Vazio</div>
+                            </div>
+                            
+                            <div class="lotacao-btn moderado" data-lotacao="moderado">
+                                <div class="lotacao-icon">🟡</div>
+                                <div class="lotacao-label">Moderado</div>
+                            </div>
+                            
+                            <div class="lotacao-btn cheio" data-lotacao="cheio">
+                                <div class="lotacao-icon">🔴</div>
+                                <div class="lotacao-label">Cheio</div>
+                            </div>
+                        </div>
+                        
+                        <input type="hidden" name="lotacao" id="lotacaoInput" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block" disabled id="submitBtn">
+                        Selecione linha e lotação
+                    </button>
+                </form>
+
+                <!-- Estatísticas -->
+                <div class="stats-box">
+                    <div class="stats-title">📊 Suas Contribuições</div>
+                    <div class="stats-item">
+                        <span class="stats-label">Total de feedbacks</span>
+                        <span class="stats-value">{{ total_feedbacks }}</span>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-label">Esta semana</span>
+                        <span class="stats-value">{{ feedbacks_semana }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
