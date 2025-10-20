@@ -4,8 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pontu - Feedback</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #f5f5f5;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 80px;
+        }
+
         .header-feedback {
             background: linear-gradient(135deg, #4CAF50, #81C784);
             padding: 15px 20px;
@@ -65,6 +86,14 @@
             border-radius: 15px;
             padding: 25px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .form-label {
+            display: block;
+            font-size: 16px;
+            font-weight: 600;
+            color: #212121;
+            margin-bottom: 12px;
         }
 
         .linha-select-container {
@@ -179,6 +208,34 @@
             font-weight: 600;
         }
 
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #388E3C;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-primary:disabled {
+            background: #CCCCCC;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .success-feedback {
             background: #E8F5E9;
             border: 2px solid #4CAF50;
@@ -193,9 +250,26 @@
             animation: slideDown 0.3s ease-out;
         }
 
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .success-feedback-icon {
             font-size: 64px;
             margin-bottom: 15px;
+            animation: bounce 0.6s ease-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
         }
 
         .success-feedback-title {
@@ -245,13 +319,53 @@
             font-weight: 600;
             color: #1565C0;
         }
+
+        .bottom-nav-home {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 480px;
+            width: 100%;
+            background: white;
+            border-top: 1px solid #E0E0E0;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+
+        .nav-item-home {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #9E9E9E;
+            transition: all 0.2s;
+            padding: 5px 20px;
+        }
+
+        .nav-item-home.active {
+            color: #4CAF50;
+        }
+
+        .nav-item-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .nav-item-label {
+            font-size: 11px;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
         <!-- Header -->
         <div class="header-feedback">
-            <button class="back-btn" onclick="window.location.href='/home'">←</button>
+            <button class="back-btn" onclick="window.location.href='home.html'">←</button>
             <div class="header-title-feedback">Reportar Lotação</div>
         </div>
 
@@ -275,7 +389,7 @@
 
             <!-- Formulário -->
             <div class="form-feedback" id="formContainer">
-                <form id="feedbackForm" method="POST" action="/feedback">
+                <form id="feedbackForm">
                     <!-- Seleção de Linha -->
                     <div class="linha-select-container">
                         <label class="form-label">Qual linha você está usando?</label>
@@ -311,8 +425,6 @@
                                 <div class="linha-nome">Ônibus</div>
                             </div>
                         </div>
-                        
-                        <input type="hidden" name="linha" id="linhaInput" required>
                     </div>
 
                     <!-- Seleção de Lotação -->
@@ -335,11 +447,9 @@
                                 <div class="lotacao-label">Cheio</div>
                             </div>
                         </div>
-                        
-                        <input type="hidden" name="lotacao" id="lotacaoInput" required>
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-block" disabled id="submitBtn">
+                    <button type="submit" class="btn btn-primary" disabled id="submitBtn">
                         Selecione linha e lotação
                     </button>
                 </form>
@@ -349,11 +459,15 @@
                     <div class="stats-title">📊 Suas Contribuições</div>
                     <div class="stats-item">
                         <span class="stats-label">Total de feedbacks</span>
-                        <span class="stats-value">{{ total_feedbacks }}</span>
+                        <span class="stats-value" id="totalFeedbacks">0</span>
                     </div>
                     <div class="stats-item">
                         <span class="stats-label">Esta semana</span>
-                        <span class="stats-value">{{ feedbacks_semana }}</span>
+                        <span class="stats-value" id="feedbacksSemana">0</span>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-label">Última contribuição</span>
+                        <span class="stats-value" id="ultimaContribuicao">Nunca</span>
                     </div>
                 </div>
             </div>
@@ -361,22 +475,22 @@
 
         <!-- Navegação Inferior -->
         <div class="bottom-nav-home">
-            <a href="/home" class="nav-item-home">
+            <a href="home.html" class="nav-item-home">
                 <span class="nav-item-icon">🏠</span>
                 <span class="nav-item-label">Início</span>
             </a>
             
-            <a href="/rotas" class="nav-item-home">
+            <a href="rotas.html" class="nav-item-home">
                 <span class="nav-item-icon">🗺️</span>
                 <span class="nav-item-label">Rotas</span>
             </a>
             
-            <a href="/resgatar" class="nav-item-home">
+            <a href="resgatar.html" class="nav-item-home">
                 <span class="nav-item-icon">🎁</span>
                 <span class="nav-item-label">Resgatar</span>
             </a>
             
-            <a href="/perfil" class="nav-item-home">
+            <a href="perfil.html" class="nav-item-home">
                 <span class="nav-item-icon">👤</span>
                 <span class="nav-item-label">Perfil</span>
             </a>
@@ -384,8 +498,16 @@
     </div>
 
     <script>
+        // Verifica login
+        if (localStorage.getItem('pontu_logged_in') !== 'true') {
+            window.location.href = 'login.html';
+        }
+
         let selectedLinha = null;
         let selectedLotacao = null;
+
+        // Carrega estatísticas ao iniciar
+        loadStats();
 
         // Seleção de linha
         document.querySelectorAll('.linha-card').forEach(card => {
@@ -393,7 +515,6 @@
                 document.querySelectorAll('.linha-card').forEach(c => c.classList.remove('selected'));
                 this.classList.add('selected');
                 selectedLinha = this.dataset.linha;
-                document.getElementById('linhaInput').value = selectedLinha;
                 checkFormValid();
             });
         });
@@ -404,7 +525,6 @@
                 document.querySelectorAll('.lotacao-btn').forEach(b => b.classList.remove('selected'));
                 this.classList.add('selected');
                 selectedLotacao = this.dataset.lotacao;
-                document.getElementById('lotacaoInput').value = selectedLotacao;
                 checkFormValid();
             });
         });
@@ -418,46 +538,72 @@
             }
         }
 
+        // Carrega estatísticas
+        function loadStats() {
+            const feedbacks = JSON.parse(localStorage.getItem('pontu_feedbacks') || '[]');
+            
+            // Total de feedbacks
+            document.getElementById('totalFeedbacks').textContent = feedbacks.length;
+            
+            // Feedbacks desta semana
+            const umaSemanaAtras = new Date();
+            umaSemanaAtras.setDate(umaSemanaAtras.getDate() - 7);
+            
+            const feedbacksSemana = feedbacks.filter(f => {
+                return new Date(f.data) > umaSemanaAtras;
+            });
+            document.getElementById('feedbacksSemana').textContent = feedbacksSemana.length;
+            
+            // Última contribuição
+            if (feedbacks.length > 0) {
+                const ultimoFeedback = feedbacks[0];
+                const dataUltimo = new Date(ultimoFeedback.data);
+                const hoje = new Date();
+                const diffDias = Math.floor((hoje - dataUltimo) / (1000 * 60 * 60 * 24));
+                
+                if (diffDias === 0) {
+                    document.getElementById('ultimaContribuicao').textContent = 'Hoje';
+                } else if (diffDias === 1) {
+                    document.getElementById('ultimaContribuicao').textContent = 'Ontem';
+                } else if (diffDias < 7) {
+                    document.getElementById('ultimaContribuicao').textContent = `${diffDias} dias atrás`;
+                } else {
+                    document.getElementById('ultimaContribuicao').textContent = dataUltimo.toLocaleDateString('pt-BR');
+                }
+            }
+        }
+
         // Envio do formulário
-        document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
+        document.getElementById('feedbackForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const formData = new FormData(this);
-            
-            try {
-                const response = await fetch('/feedback', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                if (response.ok) {
-                    // Esconde formulário e mostra sucesso
-                    document.getElementById('formContainer').style.display = 'none';
-                    document.getElementById('successFeedback').classList.add('show');
-                    
-                    // Redireciona após 2 segundos
-                    setTimeout(() => {
-                        window.location.href = '/home';
-                    }, 2000);
-                } else {
-                    alert('Erro ao enviar feedback. Tente novamente.');
-                }
-            } catch (error) {
-                alert('Erro ao enviar feedback. Tente novamente.');
-                console.error('Erro:', error);
+            if (!selectedLinha || !selectedLotacao) {
+                alert('⚠️ Selecione a linha e a lotação!');
+                return;
             }
-        });
 
-        // Se houver sucesso na URL
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('success')) {
+            // Cria objeto do feedback
+            const feedback = {
+                id: Date.now(),
+                linha: selectedLinha,
+                lotacao: selectedLotacao,
+                data: new Date().toISOString()
+            };
+
+            // Salva no localStorage
+            const feedbacks = JSON.parse(localStorage.getItem('pontu_feedbacks') || '[]');
+            feedbacks.unshift(feedback);
+            localStorage.setItem('pontu_feedbacks', JSON.stringify(feedbacks));
+
+            // Esconde formulário e mostra sucesso
             document.getElementById('formContainer').style.display = 'none';
             document.getElementById('successFeedback').classList.add('show');
-            
+
+            // Redireciona após 2 segundos
             setTimeout(() => {
-                window.location.href = '/home';
+                window.location.href = 'home.html';
             }, 2000);
-        }
+        });
     </script>
 </body>
 </html>
