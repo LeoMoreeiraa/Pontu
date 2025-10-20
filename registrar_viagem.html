@@ -3,10 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pontu - Explorar Transportes</title>
-    <link rel="stylesheet" href="home.html" class="nav-item-home">
+    <title>Pontu - Registrar Viagem</title>
     <style>
-        .header-explorar {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #f5f5f5;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 80px;
+        }
+
+        .header-viagem {
             background: linear-gradient(135deg, #4CAF50, #81C784);
             padding: 15px 20px;
             color: white;
@@ -24,87 +45,108 @@
             padding: 5px;
         }
 
-        .header-title-explorar {
+        .header-title-viagem {
             font-size: 20px;
             font-weight: 600;
         }
 
-        .content-explorar {
+        .content-viagem {
             padding: 20px 20px 100px;
         }
 
-        .search-box-explorar {
-            background: white;
-            border-radius: 15px;
-            padding: 12px 15px;
+        .step-indicator {
             display: flex;
-            align-items: center;
+            justify-content: center;
             gap: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
-        .search-icon-explorar {
-            font-size: 20px;
-            color: #757575;
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #E0E0E0;
+            transition: all 0.3s;
         }
 
-        .search-input-explorar {
-            flex: 1;
-            border: none;
-            outline: none;
-            font-size: 15px;
+        .step-dot.active {
+            background: #4CAF50;
+            width: 30px;
+            border-radius: 6px;
         }
 
-        .category-section {
-            margin-bottom: 30px;
+        .step-container {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
         }
 
-        .category-title {
-            font-size: 18px;
-            font-weight: 600;
+        .step-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .step-title {
+            font-size: 22px;
+            font-weight: 700;
             color: #212121;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .step-subtitle {
+            font-size: 14px;
+            color: #757575;
+            margin-bottom: 25px;
+            text-align: center;
         }
 
         .transport-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
+            margin-bottom: 20px;
         }
 
         .transport-card {
             background: white;
+            border: 3px solid transparent;
             border-radius: 15px;
             padding: 20px;
             text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             cursor: pointer;
             transition: all 0.2s;
-            text-decoration: none;
-            color: #212121;
         }
 
         .transport-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .transport-card.selected {
+            border-color: #4CAF50;
+            background: #E8F5E9;
         }
 
         .transport-icon-big {
             font-size: 48px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .transport-name {
             font-size: 15px;
             font-weight: 600;
+            color: #212121;
             margin-bottom: 5px;
-        }
-
-        .transport-desc {
-            font-size: 12px;
-            color: #757575;
-            margin-bottom: 10px;
         }
 
         .transport-pontos {
@@ -117,176 +159,413 @@
             display: inline-block;
         }
 
-        .info-banner {
-            background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #212121;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #E0E0E0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #388E3C;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-primary:disabled {
+            background: #CCCCCC;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #F5F5F5;
+            color: #757575;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #E0E0E0;
+        }
+
+        .info-box {
+            background: #E3F2FD;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #1565C0;
+        }
+
+        .resumo-card {
+            background: white;
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .resumo-item {
             display: flex;
-            gap: 15px;
-            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #F5F5F5;
         }
 
-        .info-icon {
-            font-size: 36px;
+        .resumo-item:last-child {
+            border-bottom: none;
         }
 
-        .info-text {
-            flex: 1;
+        .resumo-label {
+            font-size: 14px;
+            color: #757575;
         }
 
-        .info-title {
-            font-size: 15px;
+        .resumo-value {
+            font-size: 14px;
             font-weight: 600;
-            color: #1565C0;
+            color: #212121;
+        }
+
+        .pontos-destaque {
+            background: #E8F5E9;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .pontos-label {
+            font-size: 14px;
+            color: #2E7D32;
             margin-bottom: 5px;
         }
 
-        .info-desc {
-            font-size: 13px;
-            color: #1976D2;
-            line-height: 1.4;
+        .pontos-value {
+            font-size: 42px;
+            font-weight: 700;
+            color: #4CAF50;
+        }
+
+        .success-animation {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .success-animation.show {
+            display: block;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 0.6s ease-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .success-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+
+        .success-desc {
+            font-size: 14px;
+            color: #757575;
+        }
+
+        .location-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: #757575;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .bottom-nav-home {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 480px;
+            width: 100%;
+            background: white;
+            border-top: 1px solid #E0E0E0;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+
+        .nav-item-home {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #9E9E9E;
+            transition: all 0.2s;
+            padding: 5px 20px;
+        }
+
+        .nav-item-home.active {
+            color: #4CAF50;
+        }
+
+        .nav-item-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .nav-item-label {
+            font-size: 11px;
+            font-weight: 500;
         }
     </style>
 </head>
 <body>
     <div class="app-container">
         <!-- Header -->
-        <div class="header-explorar">
-         <button class="back-btn" onclick="window.location.href='home.html'">←</button>
-            <div class="header-title-explorar">Explorar Transportes</div>
+        <div class="header-viagem">
+            <button class="back-btn" onclick="window.location.href='home.html'">←</button>
+            <div class="header-title-viagem">Registrar Viagem</div>
         </div>
 
-        <div class="content-explorar">
-            <!-- Busca -->
-            <div class="search-box-explorar">
-                <span class="search-icon-explorar">🔍</span>
-                <input 
-                    type="text" 
-                    class="search-input-explorar" 
-                    placeholder="Buscar meio de transporte..."
-                    id="searchExplorar"
-                >
+        <div class="content-viagem">
+            <!-- Indicador de Passos -->
+            <div class="step-indicator">
+                <div class="step-dot active" id="dot1"></div>
+                <div class="step-dot" id="dot2"></div>
+                <div class="step-dot" id="dot3"></div>
             </div>
 
-            <!-- Banner Informativo -->
-            <div class="info-banner">
-                <div class="info-icon">💡</div>
-                <div class="info-text">
-                    <div class="info-title">Ganhe mais pontos!</div>
-                    <div class="info-desc">
-                        Transportes mais sustentáveis como bicicleta e patinete concedem +50% de pontos bonus!
-                    </div>
+            <!-- Passo 1: Selecionar Transporte -->
+            <div class="step-container active" id="step1">
+                <div class="step-title">Qual transporte você usou?</div>
+                <div class="step-subtitle">Selecione o meio de transporte da sua viagem</div>
+
+                <div class="info-box">
+                    💡 <strong>Dica:</strong> Transportes sustentáveis como bike e patinete dão mais pontos!
                 </div>
-            </div>
 
-            <!-- Transporte Público -->
-            <div class="category-section">
-                <div class="category-title">🚇 Transporte Público</div>
-                <div class="transport-grid">
-                    <div class="transport-card" onclick="window.location.href='/rotas'">
+                <div class="transport-grid" id="transportGrid">
+                    <div class="transport-card" data-tipo="metro" data-pontos="10" onclick="selectTransport(this)">
                         <div class="transport-icon-big">🚇</div>
                         <div class="transport-name">Metrô</div>
-                        <div class="transport-desc">Linhas 1, 2, 3, 4, 5</div>
-                        <div class="transport-pontos">+10 pts/viagem</div>
+                        <div class="transport-pontos">+10 pts</div>
                     </div>
 
-                    <div class="transport-card" onclick="window.location.href='/rotas'">
+                    <div class="transport-card" data-tipo="trem" data-pontos="10" onclick="selectTransport(this)">
                         <div class="transport-icon-big">🚆</div>
-                        <div class="transport-name">Trem (CPTM)</div>
-                        <div class="transport-desc">Linhas 7, 8, 9, 10</div>
-                        <div class="transport-pontos">+10 pts/viagem</div>
+                        <div class="transport-name">Trem</div>
+                        <div class="transport-pontos">+10 pts</div>
                     </div>
 
-                    <div class="transport-card" onclick="window.location.href='/rotas'">
+                    <div class="transport-card" data-tipo="onibus" data-pontos="12" onclick="selectTransport(this)">
                         <div class="transport-icon-big">🚌</div>
                         <div class="transport-name">Ônibus</div>
-                        <div class="transport-desc">SPTrans Municipal</div>
-                        <div class="transport-pontos">+12 pts/viagem</div>
+                        <div class="transport-pontos">+12 pts</div>
                     </div>
 
-                    <div class="transport-card" onclick="alert('🚧 Em breve!')">
-                        <div class="transport-icon-big">🚊</div>
-                        <div class="transport-name">VLT</div>
-                        <div class="transport-desc">Em breve</div>
-                        <div class="transport-pontos">+10 pts/viagem</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Micromobilidade -->
-            <div class="category-section">
-                <div class="category-title">🚴 Micromobilidade</div>
-                <div class="transport-grid">
-                    <div class="transport-card" onclick="window.location.href='/registrar-viagem'">
+                    <div class="transport-card" data-tipo="bike" data-pontos="15" onclick="selectTransport(this)">
                         <div class="transport-icon-big">🚴</div>
                         <div class="transport-name">Bicicleta</div>
-                        <div class="transport-desc">Itaú Bike, Tembici</div>
-                        <div class="transport-pontos">+15 pts/viagem</div>
+                        <div class="transport-pontos">+15 pts</div>
                     </div>
 
-                    <div class="transport-card" onclick="window.location.href='/registrar-viagem'">
+                    <div class="transport-card" data-tipo="patinete" data-pontos="15" onclick="selectTransport(this)">
                         <div class="transport-icon-big">🛴</div>
                         <div class="transport-name">Patinete</div>
-                        <div class="transport-desc">Lime, Grin, Yellow</div>
-                        <div class="transport-pontos">+15 pts/viagem</div>
+                        <div class="transport-pontos">+15 pts</div>
                     </div>
 
-                    <div class="transport-card" onclick="alert('🚧 Em breve!')">
-                        <div class="transport-icon-big">🛹</div>
-                        <div class="transport-name">Skate</div>
-                        <div class="transport-desc">Em breve</div>
-                        <div class="transport-pontos">+15 pts/viagem</div>
-                    </div>
-
-                    <div class="transport-card" onclick="alert('🚧 Em breve!')">
-                        <div class="transport-icon-big">🚶</div>
-                        <div class="transport-name">Caminhada</div>
-                        <div class="transport-desc">A pé</div>
-                        <div class="transport-pontos">+5 pts/km</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Compartilhado -->
-            <div class="category-section">
-                <div class="category-title">🤝 Transporte Compartilhado</div>
-                <div class="transport-grid">
-                    <div class="transport-card" onclick="alert('🚧 Em breve!')">
+                    <div class="transport-card" data-tipo="carona" data-pontos="8" onclick="selectTransport(this)">
                         <div class="transport-icon-big">🚗</div>
                         <div class="transport-name">Carona</div>
-                        <div class="transport-desc">BlaBlaCar, Waze</div>
-                        <div class="transport-pontos">+8 pts/viagem</div>
-                    </div>
-
-                    <div class="transport-card" onclick="alert('🚧 Em breve!')">
-                        <div class="transport-icon-big">🚕</div>
-                        <div class="transport-name">Uber Pool</div>
-                        <div class="transport-desc">Viagem compartilhada</div>
-                        <div class="transport-pontos">+7 pts/viagem</div>
+                        <div class="transport-pontos">+8 pts</div>
                     </div>
                 </div>
+
+                <button class="btn btn-primary" id="btnStep1" onclick="goToStep(2)" disabled>
+                    Continuar
+                </button>
+            </div>
+
+            <!-- Passo 2: Informar Origem e Destino -->
+            <div class="step-container" id="step2">
+                <div class="step-title">De onde até onde?</div>
+                <div class="step-subtitle">Informe os pontos de origem e destino</div>
+
+                <div class="form-group">
+                    <label class="form-label" for="origem">📍 Origem</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="text" 
+                            id="origem" 
+                            class="form-input" 
+                            placeholder="Ex: Estação Sé, Av. Paulista..."
+                            oninput="checkStep2()"
+                        >
+                        <span class="location-icon">📍</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="destino">🎯 Destino</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="text" 
+                            id="destino" 
+                            class="form-input" 
+                            placeholder="Ex: Terminal Pinheiros, Shopping..."
+                            oninput="checkStep2()"
+                        >
+                        <span class="location-icon">🎯</span>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    📝 Essas informações ajudam a criar estatísticas mais precisas sobre suas viagens
+                </div>
+
+                <button class="btn btn-primary" id="btnStep2" onclick="goToStep(3)" disabled>
+                    Continuar
+                </button>
+                <button class="btn btn-secondary" onclick="goToStep(1)">
+                    Voltar
+                </button>
+            </div>
+
+            <!-- Passo 3: Confirmar e Registrar -->
+            <div class="step-container" id="step3">
+                <div class="step-title">Confirme sua viagem</div>
+                <div class="step-subtitle">Revise as informações antes de registrar</div>
+
+                <div class="pontos-destaque">
+                    <div class="pontos-label">Você vai ganhar</div>
+                    <div class="pontos-value" id="pontosGanhos">0</div>
+                    <div class="pontos-label">pontos</div>
+                </div>
+
+                <div class="resumo-card">
+                    <div class="resumo-item">
+                        <span class="resumo-label">Transporte</span>
+                        <span class="resumo-value" id="resumoTransporte">-</span>
+                    </div>
+                    <div class="resumo-item">
+                        <span class="resumo-label">Origem</span>
+                        <span class="resumo-value" id="resumoOrigem">-</span>
+                    </div>
+                    <div class="resumo-item">
+                        <span class="resumo-label">Destino</span>
+                        <span class="resumo-value" id="resumoDestino">-</span>
+                    </div>
+                    <div class="resumo-item">
+                        <span class="resumo-label">Data/Hora</span>
+                        <span class="resumo-value" id="resumoData">-</span>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="registrarViagem()">
+                    ✓ Registrar Viagem
+                </button>
+                <button class="btn btn-secondary" onclick="goToStep(2)">
+                    Voltar
+                </button>
+            </div>
+
+            <!-- Sucesso -->
+            <div class="success-animation" id="successScreen">
+                <div class="success-icon">🎉</div>
+                <div class="success-title">Viagem Registrada!</div>
+                <div class="success-desc">
+                    Você ganhou <strong id="pontosFinais">0</strong> pontos! Continue viajando de forma sustentável.
+                </div>
+                <button class="btn btn-primary" onclick="window.location.href='home.html'" style="margin-top: 30px;">
+                    Voltar ao Início
+                </button>
             </div>
         </div>
 
         <!-- Navegação Inferior -->
         <div class="bottom-nav-home">
-            <a href="/home" class="nav-item-home">
+            <a href="home.html" class="nav-item-home">
                 <span class="nav-item-icon">🏠</span>
                 <span class="nav-item-label">Início</span>
             </a>
             
-            <a href="/rotas" class="nav-item-home">
+            <a href="rotas.html" class="nav-item-home">
                 <span class="nav-item-icon">🗺️</span>
                 <span class="nav-item-label">Rotas</span>
             </a>
             
-            <a href="/resgatar" class="nav-item-home">
+            <a href="resgatar.html" class="nav-item-home">
                 <span class="nav-item-icon">🎁</span>
                 <span class="nav-item-label">Resgatar</span>
             </a>
             
-            <a href="/perfil" class="nav-item-home">
+            <a href="perfil.html" class="nav-item-home">
                 <span class="nav-item-icon">👤</span>
                 <span class="nav-item-label">Perfil</span>
             </a>
@@ -294,22 +573,129 @@
     </div>
 
     <script>
-        // Busca simples
-        document.getElementById('searchExplorar').addEventListener('input', function(e) {
-            const query = e.target.value.toLowerCase();
-            const cards = document.querySelectorAll('.transport-card');
-            
-            cards.forEach(card => {
-                const name = card.querySelector('.transport-name').textContent.toLowerCase();
-                const desc = card.querySelector('.transport-desc').textContent.toLowerCase();
-                
-                if (name.includes(query) || desc.includes(query)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
+        // Verifica login
+        if (localStorage.getItem('pontu_logged_in') !== 'true') {
+            window.location.href = 'login.html';
+        }
+
+        // Variáveis globais
+        let selectedTransport = null;
+        let transportPontos = 0;
+        let currentStep = 1;
+
+        // Nomes dos transportes
+        const transportNames = {
+            'metro': 'Metrô',
+            'trem': 'Trem (CPTM)',
+            'onibus': 'Ônibus',
+            'bike': 'Bicicleta',
+            'patinete': 'Patinete',
+            'carona': 'Carona'
+        };
+
+        // Selecionar transporte
+        function selectTransport(element) {
+            // Remove seleção anterior
+            document.querySelectorAll('.transport-card').forEach(card => {
+                card.classList.remove('selected');
             });
-        });
+
+            // Adiciona seleção
+            element.classList.add('selected');
+            selectedTransport = element.dataset.tipo;
+            transportPontos = parseInt(element.dataset.pontos);
+
+            // Habilita botão
+            document.getElementById('btnStep1').disabled = false;
+        }
+
+        // Verificar passo 2
+        function checkStep2() {
+            const origem = document.getElementById('origem').value.trim();
+            const destino = document.getElementById('destino').value.trim();
+            const btn = document.getElementById('btnStep2');
+            
+            btn.disabled = !(origem.length >= 3 && destino.length >= 3);
+        }
+
+        // Ir para passo
+        function goToStep(step) {
+            // Esconde todos os passos
+            document.querySelectorAll('.step-container').forEach(container => {
+                container.classList.remove('active');
+            });
+
+            // Remove active dos dots
+            document.querySelectorAll('.step-dot').forEach(dot => {
+                dot.classList.remove('active');
+            });
+
+            // Mostra passo atual
+            document.getElementById(`step${step}`).classList.add('active');
+            document.getElementById(`dot${step}`).classList.add('active');
+            currentStep = step;
+
+            // Se for passo 3, atualiza resumo
+            if (step === 3) {
+                atualizarResumo();
+            }
+
+            // Scroll para o topo
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Atualizar resumo
+        function atualizarResumo() {
+            const origem = document.getElementById('origem').value;
+            const destino = document.getElementById('destino').value;
+            const agora = new Date();
+            const dataFormatada = agora.toLocaleDateString('pt-BR') + ' às ' + 
+                                 agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+
+            document.getElementById('pontosGanhos').textContent = transportPontos;
+            document.getElementById('resumoTransporte').textContent = transportNames[selectedTransport];
+            document.getElementById('resumoOrigem').textContent = origem;
+            document.getElementById('resumoDestino').textContent = destino;
+            document.getElementById('resumoData').textContent = dataFormatada;
+        }
+
+        // Registrar viagem
+        function registrarViagem() {
+            const origem = document.getElementById('origem').value;
+            const destino = document.getElementById('destino').value;
+
+            // Cria objeto da viagem
+            const viagem = {
+                id: Date.now(),
+                modal: selectedTransport,
+                origem: origem,
+                destino: destino,
+                pontos: transportPontos,
+                data: new Date().toISOString()
+            };
+
+            // Salva no localStorage
+            const viagens = JSON.parse(localStorage.getItem('pontu_viagens') || '[]');
+            viagens.unshift(viagem);
+            localStorage.setItem('pontu_viagens', JSON.stringify(viagens));
+
+            // Adiciona pontos
+            const pontosAtual = parseInt(localStorage.getItem('pontu_points') || '0');
+            const novosPontos = pontosAtual + transportPontos;
+            localStorage.setItem('pontu_points', novosPontos.toString());
+
+            // Esconde todos os passos
+            document.querySelectorAll('.step-container').forEach(container => {
+                container.classList.remove('active');
+            });
+
+            // Mostra tela de sucesso
+            document.getElementById('pontosFinais').textContent = transportPontos;
+            document.getElementById('successScreen').classList.add('show');
+
+            // Confete (opcional)
+            console.log('🎉 Viagem registrada com sucesso!');
+        }
     </script>
 </body>
 </html>
