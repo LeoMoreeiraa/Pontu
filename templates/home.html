@@ -4,10 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pontu - Home</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
+            font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #f5f5f5;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 80px;
         }
 
         .header-home {
@@ -94,12 +111,36 @@
             margin-top: 15px;
         }
 
-        .btn-small {
-            padding: 8px 16px;
-            font-size: 13px;
-            border-radius: 20px;
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
             text-decoration: none;
             display: inline-block;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #388E3C;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #E8F5E9;
+            color: #4CAF50;
+        }
+
+        .btn-secondary:hover {
+            background: #C8E6C9;
+            transform: translateY(-2px);
         }
 
         .search-section {
@@ -134,7 +175,7 @@
         }
 
         .menu-section {
-            padding: 0 20px 90px;
+            padding: 0 20px 20px;
         }
 
         .section-title {
@@ -182,13 +223,15 @@
         .bottom-nav-home {
             position: fixed;
             bottom: 0;
-            left: 0;
-            right: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 480px;
+            width: 100%;
             background: white;
             border-top: 1px solid #E0E0E0;
             display: flex;
             justify-content: space-around;
-            padding: 12px 0 12px;
+            padding: 12px 0;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
             z-index: 100;
         }
@@ -220,22 +263,6 @@
             font-size: 11px;
             font-weight: 500;
         }
-
-        .badge-notification {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #F44336;
-            color: white;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-        }
     </style>
 </head>
 <body>
@@ -244,13 +271,13 @@
         <div class="header-home">
             <div class="header-top">
                 <div class="logo-small">PONTU 🌱</div>
-                <button class="btn-logout" onclick="window.location.href='/logout'">
+                <button class="btn-logout" onclick="logout()">
                     Sair
                 </button>
             </div>
             
             <div class="welcome-section">
-                <div class="welcome-name">Olá, {{ nome }}! 👋</div>
+                <div class="welcome-name" id="welcomeName">Olá! 👋</div>
                 <div class="welcome-subtitle">Vamos tornar sua viagem mais sustentável</div>
             </div>
         </div>
@@ -258,14 +285,14 @@
         <!-- Card de Pontos -->
         <div class="points-card">
             <div class="points-label">Seu saldo de pontos</div>
-            <div class="points-value">{{ pontos }}</div>
+            <div class="points-value" id="pointsValue">0</div>
             <div class="points-text">pontos acumulados</div>
             
             <div class="quick-action">
-                <a href="/registrar-viagem" class="btn btn-primary btn-small">
+                <a href="registrar_viagem.html" class="btn btn-primary">
                     ➕ Registrar Viagem
                 </a>
-                <a href="/resgatar" class="btn btn-secondary btn-small">
+                <a href="resgatar.html" class="btn btn-secondary">
                     🎁 Resgatar
                 </a>
             </div>
@@ -289,32 +316,32 @@
             <div class="section-title">O que você quer fazer?</div>
             
             <div class="menu-grid-home">
-                <a href="/explorar" class="menu-card">
+                <a href="explorar.html" class="menu-card">
                     <div class="menu-card-icon">🚇</div>
                     <div class="menu-card-label">Explorar Transportes</div>
                 </a>
                 
-                <a href="/rotas" class="menu-card">
+                <a href="rotas.html" class="menu-card">
                     <div class="menu-card-icon">🗺️</div>
                     <div class="menu-card-label">Consultar Rotas</div>
                 </a>
                 
-                <a href="/planejar" class="menu-card">
+                <a href="planejar.html" class="menu-card">
                     <div class="menu-card-icon">🧭</div>
                     <div class="menu-card-label">Planejar Rota</div>
                 </a>
                 
-                <a href="/favoritos" class="menu-card">
+                <a href="favoritos.html" class="menu-card">
                     <div class="menu-card-icon">⭐</div>
                     <div class="menu-card-label">Meus Favoritos</div>
                 </a>
                 
-                <a href="/historico" class="menu-card">
+                <a href="historico.html" class="menu-card">
                     <div class="menu-card-icon">📊</div>
                     <div class="menu-card-label">Histórico</div>
                 </a>
                 
-                <a href="/feedback" class="menu-card">
+                <a href="feedback.html" class="menu-card">
                     <div class="menu-card-icon">💬</div>
                     <div class="menu-card-label">Feedback</div>
                 </a>
@@ -323,22 +350,22 @@
 
         <!-- Navegação Inferior -->
         <div class="bottom-nav-home">
-            <a href="/home" class="nav-item-home active">
+            <a href="home.html" class="nav-item-home active">
                 <span class="nav-item-icon">🏠</span>
                 <span class="nav-item-label">Início</span>
             </a>
             
-            <a href="/rotas" class="nav-item-home">
+            <a href="rotas.html" class="nav-item-home">
                 <span class="nav-item-icon">🗺️</span>
                 <span class="nav-item-label">Rotas</span>
             </a>
             
-            <a href="/resgatar" class="nav-item-home">
+            <a href="resgatar.html" class="nav-item-home">
                 <span class="nav-item-icon">🎁</span>
                 <span class="nav-item-label">Resgatar</span>
             </a>
             
-            <a href="/perfil" class="nav-item-home">
+            <a href="perfil.html" class="nav-item-home">
                 <span class="nav-item-icon">👤</span>
                 <span class="nav-item-label">Perfil</span>
             </a>
@@ -346,23 +373,48 @@
     </div>
 
     <script>
+        // Inicializa o app
+        function initApp() {
+            // Verifica se está logado
+            const isLoggedIn = localStorage.getItem('pontu_logged_in');
+            if (isLoggedIn !== 'true') {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Carrega dados do usuário
+            loadUserData();
+        }
+
+        function loadUserData() {
+            // Pega nome do localStorage
+            const userName = localStorage.getItem('pontu_user_name') || 'Usuário';
+            const firstName = userName.split(' ')[0];
+            document.getElementById('welcomeName').textContent = `Olá, ${firstName}! 👋`;
+
+            // Pega pontos
+            const points = localStorage.getItem('pontu_points') || '0';
+            document.getElementById('pointsValue').textContent = points;
+        }
+
+        function logout() {
+            if (confirm('Deseja realmente sair?')) {
+                localStorage.removeItem('pontu_logged_in');
+                window.location.href = 'login.html';
+            }
+        }
+
         // Pesquisa simples
         document.getElementById('searchInput').addEventListener('input', function(e) {
             const query = e.target.value.toLowerCase();
             if (query.length > 2) {
                 console.log('Buscando por:', query);
-                // Aqui você pode adicionar lógica de busca depois
+                // Você pode adicionar lógica de busca aqui
             }
         });
 
-        // Efeito de feedback ao clicar nos cards
-        document.querySelectorAll('.menu-card').forEach(card => {
-            card.addEventListener('click', function(e) {
-                // Apenas cards sem funcionalidade mostram alerta
-                const href = this.getAttribute('href');
-                // Nenhum card precisa de alerta agora, todos funcionam!
-            });
-        });
+        // Inicializa quando a página carregar
+        window.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>

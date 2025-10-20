@@ -4,8 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pontu - Registrar Viagem</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #f5f5f5;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 80px;
+        }
+
         .header-registrar {
             background: linear-gradient(135deg, #4CAF50, #81C784);
             padding: 15px 20px;
@@ -30,7 +51,7 @@
         }
 
         .content-registrar {
-            padding: 30px 20px 100px;
+            padding: 30px 20px;
         }
 
         .success-card {
@@ -41,10 +62,6 @@
             text-align: center;
             margin-bottom: 30px;
             display: none;
-        }
-
-        .success-card.show {
-            display: block;
             animation: slideDown 0.3s ease-out;
         }
 
@@ -59,9 +76,19 @@
             }
         }
 
+        .success-card.show {
+            display: block;
+        }
+
         .success-icon {
             font-size: 64px;
             margin-bottom: 15px;
+            animation: bounce 0.6s ease-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
         }
 
         .success-title {
@@ -81,6 +108,11 @@
             border-radius: 15px;
             padding: 25px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .form-section h3 {
+            margin-bottom: 20px;
+            color: #212121;
         }
 
         .modal-cards {
@@ -103,11 +135,13 @@
         .modal-card:hover {
             background: #E8F5E9;
             border-color: #81C784;
+            transform: translateY(-2px);
         }
 
         .modal-card.selected {
             background: #E8F5E9;
             border-color: #4CAF50;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
         }
 
         .modal-icon {
@@ -127,6 +161,33 @@
             font-weight: 600;
         }
 
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #212121;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #E0E0E0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
         .info-box {
             background: #E3F2FD;
             border-left: 4px solid #2196F3;
@@ -137,11 +198,72 @@
             color: #1565C0;
         }
 
-        .btn-submit {
+        .btn {
             width: 100%;
-            margin-top: 20px;
             padding: 15px;
+            border: none;
+            border-radius: 10px;
             font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 20px;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #388E3C;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-primary:disabled {
+            background: #CCCCCC;
+            cursor: not-allowed;
+        }
+
+        .bottom-nav-home {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 480px;
+            width: 100%;
+            background: white;
+            border-top: 1px solid #E0E0E0;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+
+        .nav-item-home {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #9E9E9E;
+            transition: all 0.2s;
+            padding: 5px 20px;
+        }
+
+        .nav-item-home.active {
+            color: #4CAF50;
+        }
+
+        .nav-item-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .nav-item-label {
+            font-size: 11px;
+            font-weight: 500;
         }
     </style>
 </head>
@@ -149,7 +271,7 @@
     <div class="app-container">
         <!-- Header -->
         <div class="header-registrar">
-            <button class="back-btn" onclick="window.location.href='/home'">←</button>
+            <button class="back-btn" onclick="window.location.href='home.html'">←</button>
             <div class="header-title-registrar">Registrar Viagem</div>
         </div>
 
@@ -162,10 +284,10 @@
             </div>
 
             <!-- Formulário -->
-            <div class="form-section">
-                <h3 style="margin-bottom: 20px; color: #212121;">Qual transporte você usou?</h3>
+            <div class="form-section" id="formSection">
+                <h3>Qual transporte você usou?</h3>
                 
-                <form id="viagemForm" method="POST" action="/registrar-viagem">
+                <form id="viagemForm">
                     <!-- Grid de Modais -->
                     <div class="modal-cards">
                         <div class="modal-card" data-modal="metro" data-pontos="10">
@@ -207,6 +329,7 @@
                         <input 
                             type="text" 
                             name="origem" 
+                            id="origem"
                             class="form-input" 
                             placeholder="Ex: Estação Sé"
                         >
@@ -217,6 +340,7 @@
                         <input 
                             type="text" 
                             name="destino" 
+                            id="destino"
                             class="form-input" 
                             placeholder="Ex: Estação Paulista"
                         >
@@ -227,7 +351,7 @@
                         concedem mais pontos!
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-submit" disabled id="submitBtn">
+                    <button type="submit" class="btn btn-primary" disabled id="submitBtn">
                         Selecione um transporte
                     </button>
                 </form>
@@ -236,22 +360,22 @@
 
         <!-- Navegação Inferior -->
         <div class="bottom-nav-home">
-            <a href="/home" class="nav-item-home">
+            <a href="home.html" class="nav-item-home">
                 <span class="nav-item-icon">🏠</span>
                 <span class="nav-item-label">Início</span>
             </a>
             
-            <a href="/rotas" class="nav-item-home">
+            <a href="rotas.html" class="nav-item-home">
                 <span class="nav-item-icon">🗺️</span>
                 <span class="nav-item-label">Rotas</span>
             </a>
             
-            <a href="/resgatar" class="nav-item-home">
+            <a href="resgatar.html" class="nav-item-home">
                 <span class="nav-item-icon">🎁</span>
                 <span class="nav-item-label">Resgatar</span>
             </a>
             
-            <a href="/perfil" class="nav-item-home">
+            <a href="perfil.html" class="nav-item-home">
                 <span class="nav-item-icon">👤</span>
                 <span class="nav-item-label">Perfil</span>
             </a>
@@ -259,6 +383,11 @@
     </div>
 
     <script>
+        // Verifica login
+        if (localStorage.getItem('pontu_logged_in') !== 'true') {
+            window.location.href = 'login.html';
+        }
+
         let selectedModal = null;
         let selectedPoints = 0;
 
@@ -273,7 +402,7 @@
                 
                 // Armazena valores
                 selectedModal = this.dataset.modal;
-                selectedPoints = this.dataset.pontos;
+                selectedPoints = parseInt(this.dataset.pontos);
                 
                 // Atualiza input hidden
                 document.getElementById('modalInput').value = selectedModal;
@@ -286,48 +415,51 @@
         });
 
         // Envio do formulário
-        document.getElementById('viagemForm').addEventListener('submit', async function(e) {
+        document.getElementById('viagemForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const formData = new FormData(this);
-            
-            try {
-                const response = await fetch('/registrar-viagem', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                if (response.ok) {
-                    // Mostra card de sucesso
-                    const successCard = document.getElementById('successCard');
-                    const successMessage = document.getElementById('successMessage');
-                    successMessage.innerHTML = `Você ganhou <strong>${selectedPoints} pontos</strong>! 🎉`;
-                    successCard.classList.add('show');
-                    
-                    // Esconde o formulário
-                    document.querySelector('.form-section').style.display = 'none';
-                    
-                    // Redireciona após 2 segundos
-                    setTimeout(() => {
-                        window.location.href = '/home';
-                    }, 2000);
-                }
-            } catch (error) {
-                alert('Erro ao registrar viagem. Tente novamente.');
+            if (!selectedModal) {
+                alert('Por favor, selecione um transporte!');
+                return;
             }
-        });
 
-        // Se houver sucesso na URL (fallback)
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('success')) {
-            const successCard = document.getElementById('successCard');
-            successCard.classList.add('show');
-            document.querySelector('.form-section').style.display = 'none';
+            const origem = document.getElementById('origem').value.trim();
+            const destino = document.getElementById('destino').value.trim();
+
+            // Pega pontos atuais
+            let currentPoints = parseInt(localStorage.getItem('pontu_points') || '0');
             
+            // Adiciona novos pontos
+            currentPoints += selectedPoints;
+            localStorage.setItem('pontu_points', currentPoints.toString());
+
+            // Salva viagem no histórico
+            const viagens = JSON.parse(localStorage.getItem('pontu_viagens') || '[]');
+            const novaViagem = {
+                id: Date.now(),
+                modal: selectedModal,
+                origem: origem || '',
+                destino: destino || '',
+                pontos: selectedPoints,
+                data: new Date().toISOString()
+            };
+            viagens.unshift(novaViagem); // Adiciona no início
+            localStorage.setItem('pontu_viagens', JSON.stringify(viagens));
+
+            // Mostra card de sucesso
+            const successCard = document.getElementById('successCard');
+            const successMessage = document.getElementById('successMessage');
+            successMessage.innerHTML = `Você ganhou <strong>${selectedPoints} pontos</strong>! 🎉`;
+            successCard.classList.add('show');
+            
+            // Esconde o formulário
+            document.getElementById('formSection').style.display = 'none';
+            
+            // Redireciona após 2 segundos
             setTimeout(() => {
-                window.location.href = '/home';
+                window.location.href = 'home.html';
             }, 2000);
-        }
+        });
     </script>
 </body>
 </html>

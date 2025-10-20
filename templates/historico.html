@@ -4,8 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pontu - Histórico</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #f5f5f5;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 80px;
+        }
+
         .header-historico {
             background: linear-gradient(135deg, #4CAF50, #81C784);
             padding: 15px 20px;
@@ -30,7 +51,7 @@
         }
 
         .content-historico {
-            padding: 20px 20px 100px;
+            padding: 20px 20px 20px;
         }
 
         .stats-cards {
@@ -72,6 +93,32 @@
             margin-bottom: 15px;
         }
 
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding: 5px 0;
+        }
+
+        .filter-tab {
+            background: #F5F5F5;
+            border: 2px solid transparent;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-tab.active {
+            background: #E8F5E9;
+            border-color: #4CAF50;
+            color: #4CAF50;
+            font-weight: 600;
+        }
+
         .timeline {
             position: relative;
             padding-left: 30px;
@@ -94,6 +141,18 @@
             border-radius: 12px;
             padding: 15px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .timeline-item::before {
@@ -133,6 +192,7 @@
             font-size: 14px;
             color: #212121;
             margin-bottom: 5px;
+            font-weight: 600;
         }
 
         .timeline-rota {
@@ -160,32 +220,6 @@
             margin-bottom: 20px;
         }
 
-        .filter-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-            padding: 5px 0;
-        }
-
-        .filter-tab {
-            background: #F5F5F5;
-            border: 2px solid transparent;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            white-space: nowrap;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .filter-tab.active {
-            background: #E8F5E9;
-            border-color: #4CAF50;
-            color: #4CAF50;
-            font-weight: 600;
-        }
-
         .month-divider {
             font-size: 14px;
             font-weight: 600;
@@ -202,13 +236,53 @@
             height: 2px;
             background: #E8F5E9;
         }
+
+        .bottom-nav-home {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 480px;
+            width: 100%;
+            background: white;
+            border-top: 1px solid #E0E0E0;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+
+        .nav-item-home {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #9E9E9E;
+            transition: all 0.2s;
+            padding: 5px 20px;
+        }
+
+        .nav-item-home.active {
+            color: #4CAF50;
+        }
+
+        .nav-item-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .nav-item-label {
+            font-size: 11px;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
         <!-- Header -->
         <div class="header-historico">
-            <button class="back-btn" onclick="window.location.href='/home'">←</button>
+            <button class="back-btn" onclick="window.location.href='home.html'">←</button>
             <div class="header-title-historico">Histórico de Viagens</div>
         </div>
 
@@ -217,25 +291,25 @@
             <div class="stats-cards">
                 <div class="stat-card">
                     <div class="stat-icon">🚇</div>
-                    <div class="stat-value">{{ total_viagens }}</div>
+                    <div class="stat-value" id="totalViagens">0</div>
                     <div class="stat-label">Viagens</div>
                 </div>
                 
                 <div class="stat-card">
                     <div class="stat-icon">⭐</div>
-                    <div class="stat-value">{{ total_pontos_ganhos }}</div>
+                    <div class="stat-value" id="totalPontos">0</div>
                     <div class="stat-label">Pontos Ganhos</div>
                 </div>
                 
                 <div class="stat-card">
                     <div class="stat-icon">🌱</div>
-                    <div class="stat-value">{{ co2_economizado }}kg</div>
+                    <div class="stat-value" id="co2Economizado">0kg</div>
                     <div class="stat-label">CO₂ Economizado</div>
                 </div>
                 
                 <div class="stat-card">
                     <div class="stat-icon">📅</div>
-                    <div class="stat-value">{{ dias_ativos }}</div>
+                    <div class="stat-value" id="diasAtivos">0</div>
                     <div class="stat-label">Dias Ativos</div>
                 </div>
             </div>
@@ -262,78 +336,32 @@
                 </div>
             </div>
 
-            {% if viagens and viagens|length > 0 %}
-                <!-- Timeline de Viagens -->
-                <div class="section-title-hist">📍 Suas Viagens</div>
-                
-                <div class="timeline" id="timelineContainer">
-                    {% set current_month = '' %}
-                    {% for viagem in viagens %}
-                        {% set viagem_month = viagem.data[:7] %}
-                        {% if viagem_month != current_month %}
-                            {% set current_month = viagem_month %}
-                            <div class="month-divider">
-                                {{ viagem.mes_ano }}
-                            </div>
-                        {% endif %}
-                        
-                        <div class="timeline-item" data-modal="{{ viagem.modal }}">
-                            <div class="timeline-header">
-                                <span class="timeline-modal">{{ viagem.icone }}</span>
-                                <span class="timeline-pontos">+{{ viagem.pontos }} pts</span>
-                            </div>
-                            
-                            <div class="timeline-info">
-                                <strong>{{ viagem.modal_nome }}</strong>
-                            </div>
-                            
-                            {% if viagem.origem and viagem.destino %}
-                            <div class="timeline-rota">
-                                📍 {{ viagem.origem }} → {{ viagem.destino }}
-                            </div>
-                            {% endif %}
-                            
-                            <div class="timeline-data">
-                                {{ viagem.data_formatada }}
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <!-- Estado Vazio -->
-                <div class="empty-state-hist">
-                    <div class="empty-icon-hist">📊</div>
-                    <div style="font-size: 20px; font-weight: 600; color: #212121; margin-bottom: 10px;">
-                        Nenhuma viagem registrada
-                    </div>
-                    <div style="font-size: 14px; color: #757575; margin-bottom: 25px;">
-                        Comece a registrar suas viagens sustentáveis e acumule pontos!
-                    </div>
-                    <a href="/registrar-viagem" class="btn btn-primary">
-                        Registrar Primeira Viagem
-                    </a>
-                </div>
-            {% endif %}
+            <!-- Timeline de Viagens -->
+            <div class="section-title-hist">📍 Suas Viagens</div>
+            
+            <div class="timeline" id="timelineContainer">
+                <!-- Viagens serão carregadas aqui -->
+            </div>
         </div>
 
         <!-- Navegação Inferior -->
         <div class="bottom-nav-home">
-            <a href="/home" class="nav-item-home">
+            <a href="home.html" class="nav-item-home">
                 <span class="nav-item-icon">🏠</span>
                 <span class="nav-item-label">Início</span>
             </a>
             
-            <a href="/rotas" class="nav-item-home">
+            <a href="rotas.html" class="nav-item-home">
                 <span class="nav-item-icon">🗺️</span>
                 <span class="nav-item-label">Rotas</span>
             </a>
             
-            <a href="/resgatar" class="nav-item-home">
+            <a href="resgatar.html" class="nav-item-home">
                 <span class="nav-item-icon">🎁</span>
                 <span class="nav-item-label">Resgatar</span>
             </a>
             
-            <a href="/perfil" class="nav-item-home">
+            <a href="perfil.html" class="nav-item-home">
                 <span class="nav-item-icon">👤</span>
                 <span class="nav-item-label">Perfil</span>
             </a>
@@ -341,6 +369,122 @@
     </div>
 
     <script>
+        // Verifica login
+        if (localStorage.getItem('pontu_logged_in') !== 'true') {
+            window.location.href = 'login.html';
+        }
+
+        const icones = {
+            'metro': '🚇',
+            'trem': '🚆',
+            'onibus': '🚌',
+            'bike': '🚴',
+            'patinete': '🛴'
+        };
+
+        const nomes = {
+            'metro': 'Metrô',
+            'trem': 'Trem (CPTM)',
+            'onibus': 'Ônibus',
+            'bike': 'Bicicleta',
+            'patinete': 'Patinete'
+        };
+
+        const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 
+                       'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+
+        // Carrega estatísticas
+        function loadStats() {
+            const viagens = JSON.parse(localStorage.getItem('pontu_viagens') || '[]');
+            
+            // Total de viagens
+            document.getElementById('totalViagens').textContent = viagens.length;
+            
+            // Total de pontos ganhos
+            const totalPontos = viagens.reduce((sum, v) => sum + v.pontos, 0);
+            document.getElementById('totalPontos').textContent = totalPontos;
+            
+            // CO2 economizado (mock: 2.5kg por viagem)
+            const co2 = (viagens.length * 2.5).toFixed(1);
+            document.getElementById('co2Economizado').textContent = co2 + 'kg';
+            
+            // Dias ativos (dias únicos)
+            const diasUnicos = new Set(viagens.map(v => v.data.split('T')[0]));
+            document.getElementById('diasAtivos').textContent = diasUnicos.size;
+        }
+
+        // Renderiza viagens
+        function renderViagens() {
+            const viagens = JSON.parse(localStorage.getItem('pontu_viagens') || '[]');
+            const container = document.getElementById('timelineContainer');
+
+            if (viagens.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state-hist">
+                        <div class="empty-icon-hist">📊</div>
+                        <div style="font-size: 20px; font-weight: 600; color: #212121; margin-bottom: 10px;">
+                            Nenhuma viagem registrada
+                        </div>
+                        <div style="font-size: 14px; color: #757575; margin-bottom: 25px;">
+                            Comece a registrar suas viagens sustentáveis e acumule pontos!
+                        </div>
+                        <a href="registrar_viagem.html" style="background: #4CAF50; color: white; padding: 12px 24px; border-radius: 25px; text-decoration: none; font-weight: 600;">
+                            Registrar Primeira Viagem
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            let mesAtual = '';
+
+            viagens.forEach(viagem => {
+                const data = new Date(viagem.data);
+                const mesAno = `${meses[data.getMonth()]} ${data.getFullYear()}`;
+                
+                // Adiciona divisor de mês se mudou
+                if (mesAno !== mesAtual) {
+                    mesAtual = mesAno;
+                    const divider = document.createElement('div');
+                    divider.className = 'month-divider';
+                    divider.textContent = mesAno;
+                    container.appendChild(divider);
+                }
+
+                const item = document.createElement('div');
+                item.className = 'timeline-item';
+                item.dataset.modal = viagem.modal;
+
+                const dataFormatada = data.toLocaleDateString('pt-BR') + ' às ' + 
+                                    data.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+
+                item.innerHTML = `
+                    <div class="timeline-header">
+                        <span class="timeline-modal">${icones[viagem.modal] || '🚇'}</span>
+                        <span class="timeline-pontos">+${viagem.pontos} pts</span>
+                    </div>
+                    
+                    <div class="timeline-info">
+                        <strong>${nomes[viagem.modal] || viagem.modal}</strong>
+                    </div>
+                    
+                    ${viagem.origem && viagem.destino ? `
+                        <div class="timeline-rota">
+                            📍 ${viagem.origem} → ${viagem.destino}
+                        </div>
+                    ` : ''}
+                    
+                    <div class="timeline-data">
+                        ${dataFormatada}
+                    </div>
+                `;
+
+                container.appendChild(item);
+            });
+        }
+
+        // Filtra viagens
         function filtrarViagens(tipo) {
             // Remove active de todos
             document.querySelectorAll('.filter-tab').forEach(tab => {
@@ -350,7 +494,7 @@
             // Adiciona active no clicado
             event.target.classList.add('active');
             
-            // Filtra viagens
+            // Filtra itens
             const items = document.querySelectorAll('.timeline-item');
             const dividers = document.querySelectorAll('.month-divider');
             
@@ -380,6 +524,10 @@
                 divider.style.display = hasVisibleItems ? 'flex' : 'none';
             });
         }
+
+        // Inicializa
+        loadStats();
+        renderViagens();
     </script>
 </body>
 </html>

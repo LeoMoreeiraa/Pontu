@@ -4,8 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pontu - Resgatar Pontos</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #f5f5f5;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 80px;
+        }
+
         .header-resgatar {
             background: linear-gradient(135deg, #4CAF50, #81C784);
             padding: 15px 20px;
@@ -51,7 +72,7 @@
         }
 
         .content-resgatar {
-            padding: 0 20px 100px;
+            padding: 0 20px 20px;
         }
 
         .section-header {
@@ -74,7 +95,6 @@
             display: flex;
             gap: 15px;
             transition: all 0.2s;
-            cursor: pointer;
         }
 
         .beneficio-card:hover {
@@ -129,7 +149,7 @@
             transition: all 0.2s;
         }
 
-        .btn-resgatar-card:hover {
+        .btn-resgatar-card:hover:not(:disabled) {
             background: #388E3C;
             transform: scale(1.05);
         }
@@ -160,7 +180,7 @@
             margin-left: 8px;
         }
 
-        /* Modal de Confirmação */
+        /* Modal */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -185,11 +205,29 @@
             max-width: 340px;
             width: 90%;
             text-align: center;
+            animation: scaleIn 0.3s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .modal-icon {
             font-size: 64px;
             margin-bottom: 15px;
+            animation: bounce 0.6s ease-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
         }
 
         .modal-title {
@@ -215,11 +253,31 @@
             color: #4CAF50;
             margin-bottom: 20px;
             letter-spacing: 2px;
+            font-family: monospace;
         }
 
         .modal-buttons {
             display: flex;
             gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #388E3C;
         }
 
         .historico-section {
@@ -276,20 +334,60 @@
             font-size: 48px;
             margin-bottom: 10px;
         }
+
+        .bottom-nav-home {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 480px;
+            width: 100%;
+            background: white;
+            border-top: 1px solid #E0E0E0;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+
+        .nav-item-home {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #9E9E9E;
+            transition: all 0.2s;
+            padding: 5px 20px;
+        }
+
+        .nav-item-home.active {
+            color: #4CAF50;
+        }
+
+        .nav-item-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .nav-item-label {
+            font-size: 11px;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
         <!-- Header -->
         <div class="header-resgatar">
-            <button class="back-btn" onclick="window.location.href='/home'">←</button>
+            <button class="back-btn" onclick="window.location.href='home.html'">←</button>
             <div class="header-title-resgatar">Resgatar Pontos</div>
         </div>
 
         <!-- Banner de Saldo -->
         <div class="saldo-banner">
             <div class="saldo-label">Seu saldo disponível</div>
-            <div class="saldo-value">{{ pontos }}</div>
+            <div class="saldo-value" id="saldoPontos">0</div>
             <div style="font-size: 13px; color: #757575; margin-top: 5px;">pontos</div>
         </div>
 
@@ -297,138 +395,14 @@
             <!-- Catálogo de Benefícios -->
             <div class="section-header">💰 Catálogo de Recompensas</div>
             
-            <div class="beneficios-grid">
-                <!-- Benefício 1 -->
-                <div class="beneficio-card">
-                    <div class="beneficio-icon">💵</div>
-                    <div class="beneficio-info">
-                        <div class="beneficio-titulo">
-                            R$ 5,00 Cashback
-                            <span class="tag-popular">POPULAR</span>
-                        </div>
-                        <div class="beneficio-desc">Crédito direto na sua carteira digital</div>
-                        <div class="beneficio-footer">
-                            <div class="beneficio-pontos">50 pontos</div>
-                            <button class="btn-resgatar-card" 
-                                    onclick="confirmarResgate('R$ 5,00 Cashback', 50)"
-                                    {{ 'disabled' if pontos < 50 else '' }}>
-                                Resgatar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Benefício 2 -->
-                <div class="beneficio-card">
-                    <div class="beneficio-icon">💰</div>
-                    <div class="beneficio-info">
-                        <div class="beneficio-titulo">
-                            R$ 10,00 Cashback
-                            <span class="tag-desconto">5% OFF</span>
-                        </div>
-                        <div class="beneficio-desc">Economize 5 pontos neste resgate!</div>
-                        <div class="beneficio-footer">
-                            <div class="beneficio-pontos">95 pontos</div>
-                            <button class="btn-resgatar-card"
-                                    onclick="confirmarResgate('R$ 10,00 Cashback', 95)"
-                                    {{ 'disabled' if pontos < 95 else '' }}>
-                                Resgatar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Benefício 3 -->
-                <div class="beneficio-card">
-                    <div class="beneficio-icon">🎬</div>
-                    <div class="beneficio-info">
-                        <div class="beneficio-titulo">Ingresso de Cinema</div>
-                        <div class="beneficio-desc">Vale para qualquer filme em rede parceira</div>
-                        <div class="beneficio-footer">
-                            <div class="beneficio-pontos">120 pontos</div>
-                            <button class="btn-resgatar-card"
-                                    onclick="confirmarResgate('Ingresso de Cinema', 120)"
-                                    {{ 'disabled' if pontos < 120 else '' }}>
-                                Resgatar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Benefício 4 -->
-                <div class="beneficio-card">
-                    <div class="beneficio-icon">🍕</div>
-                    <div class="beneficio-info">
-                        <div class="beneficio-titulo">Desconto 20% Alimentação</div>
-                        <div class="beneficio-desc">Restaurantes e lanchonetes parceiras</div>
-                        <div class="beneficio-footer">
-                            <div class="beneficio-pontos">80 pontos</div>
-                            <button class="btn-resgatar-card"
-                                    onclick="confirmarResgate('Desconto 20% Alimentação', 80)"
-                                    {{ 'disabled' if pontos < 80 else '' }}>
-                                Resgatar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Benefício 5 -->
-                <div class="beneficio-card">
-                    <div class="beneficio-icon">🚴</div>
-                    <div class="beneficio-info">
-                        <div class="beneficio-titulo">1 Dia Bike Itaú Grátis</div>
-                        <div class="beneficio-desc">Pedale o dia todo sem custo adicional</div>
-                        <div class="beneficio-footer">
-                            <div class="beneficio-pontos">60 pontos</div>
-                            <button class="btn-resgatar-card"
-                                    onclick="confirmarResgate('1 Dia Bike Itaú Grátis', 60)"
-                                    {{ 'disabled' if pontos < 60 else '' }}>
-                                Resgatar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Benefício 6 -->
-                <div class="beneficio-card">
-                    <div class="beneficio-icon">🎟️</div>
-                    <div class="beneficio-info">
-                        <div class="beneficio-titulo">Crédito R$ 15 Transporte</div>
-                        <div class="beneficio-desc">Recarga para seu Bilhete Único</div>
-                        <div class="beneficio-footer">
-                            <div class="beneficio-pontos">140 pontos</div>
-                            <button class="btn-resgatar-card"
-                                    onclick="confirmarResgate('Crédito R$ 15 Transporte', 140)"
-                                    {{ 'disabled' if pontos < 140 else '' }}>
-                                Resgatar
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            <div class="beneficios-grid" id="beneficiosGrid">
+                <!-- Benefícios serão gerados por JS -->
             </div>
 
             <!-- Histórico de Resgates -->
             <div class="historico-section">
                 <div class="section-header">📜 Histórico de Resgates</div>
-                
-                {% if resgates %}
-                    {% for resgate in resgates %}
-                    <div class="historico-item">
-                        <div class="historico-info">
-                            <div class="historico-titulo">{{ resgate.beneficio }}</div>
-                            <div class="historico-data">{{ resgate.data }}</div>
-                            <div class="historico-codigo">{{ resgate.codigo }}</div>
-                        </div>
-                        <div class="historico-pontos">-{{ resgate.pontos }}</div>
-                    </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="empty-state">
-                        <div class="empty-icon">🎁</div>
-                        <div>Nenhum resgate ainda</div>
-                        <div style="font-size: 13px; margin-top: 5px;">Acumule pontos e resgate seus benefícios!</div>
-                    </div>
-                {% endif %}
+                <div id="historicoContainer"></div>
             </div>
         </div>
 
@@ -440,7 +414,7 @@
                 <div class="modal-desc" id="modalDesc">Seu benefício foi resgatado com sucesso</div>
                 <div class="modal-code" id="modalCode">PONTU-ABC123</div>
                 <div class="modal-buttons">
-                    <button class="btn btn-primary btn-block" onclick="window.location.href='/resgatar'">
+                    <button class="btn btn-primary" onclick="fecharModal()">
                         Entendi
                     </button>
                 </div>
@@ -449,22 +423,22 @@
 
         <!-- Navegação Inferior -->
         <div class="bottom-nav-home">
-            <a href="/home" class="nav-item-home">
+            <a href="home.html" class="nav-item-home">
                 <span class="nav-item-icon">🏠</span>
                 <span class="nav-item-label">Início</span>
             </a>
             
-            <a href="/rotas" class="nav-item-home">
+            <a href="rotas.html" class="nav-item-home">
                 <span class="nav-item-icon">🗺️</span>
                 <span class="nav-item-label">Rotas</span>
             </a>
             
-            <a href="/resgatar" class="nav-item-home active">
+            <a href="resgatar.html" class="nav-item-home active">
                 <span class="nav-item-icon">🎁</span>
                 <span class="nav-item-label">Resgatar</span>
             </a>
             
-            <a href="/perfil" class="nav-item-home">
+            <a href="perfil.html" class="nav-item-home">
                 <span class="nav-item-icon">👤</span>
                 <span class="nav-item-label">Perfil</span>
             </a>
@@ -472,35 +446,156 @@
     </div>
 
     <script>
+        // Verifica login
+        if (localStorage.getItem('pontu_logged_in') !== 'true') {
+            window.location.href = 'login.html';
+        }
+
+        // Catálogo de benefícios
+        const beneficios = [
+            { icon: '💵', titulo: 'R$ 5,00 Cashback', desc: 'Crédito direto na sua carteira digital', pontos: 50, tag: 'POPULAR' },
+            { icon: '💰', titulo: 'R$ 10,00 Cashback', desc: 'Economize 5 pontos neste resgate!', pontos: 95, tag: '5% OFF' },
+            { icon: '🎬', titulo: 'Ingresso de Cinema', desc: 'Vale para qualquer filme em rede parceira', pontos: 120 },
+            { icon: '🍕', titulo: 'Desconto 20% Alimentação', desc: 'Restaurantes e lanchonetes parceiras', pontos: 80 },
+            { icon: '🚴', titulo: '1 Dia Bike Itaú Grátis', desc: 'Pedale o dia todo sem custo adicional', pontos: 60 },
+            { icon: '🎟️', titulo: 'Crédito R$ 15 Transporte', desc: 'Recarga para seu Bilhete Único', pontos: 140 }
+        ];
+
+        // Carrega pontos
+        function loadPontos() {
+            const pontos = localStorage.getItem('pontu_points') || '0';
+            document.getElementById('saldoPontos').textContent = pontos;
+            return parseInt(pontos);
+        }
+
+        // Renderiza benefícios
+        function renderBeneficios() {
+            const pontosAtual = loadPontos();
+            const grid = document.getElementById('beneficiosGrid');
+            grid.innerHTML = '';
+
+            beneficios.forEach(beneficio => {
+                const temPontos = pontosAtual >= beneficio.pontos;
+                
+                const card = document.createElement('div');
+                card.className = 'beneficio-card';
+                card.innerHTML = `
+                    <div class="beneficio-icon">${beneficio.icon}</div>
+                    <div class="beneficio-info">
+                        <div class="beneficio-titulo">
+                            ${beneficio.titulo}
+                            ${beneficio.tag ? `<span class="tag-${beneficio.tag === 'POPULAR' ? 'popular' : 'desconto'}">${beneficio.tag}</span>` : ''}
+                        </div>
+                        <div class="beneficio-desc">${beneficio.desc}</div>
+                        <div class="beneficio-footer">
+                            <div class="beneficio-pontos">${beneficio.pontos} pontos</div>
+                            <button class="btn-resgatar-card" 
+                                    onclick="confirmarResgate('${beneficio.titulo}', ${beneficio.pontos})"
+                                    ${!temPontos ? 'disabled' : ''}>
+                                Resgatar
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Gera código aleatório
+        function gerarCodigo() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let codigo = 'PONTU-';
+            for (let i = 0; i < 6; i++) {
+                codigo += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return codigo;
+        }
+
+        // Confirma resgate
         function confirmarResgate(beneficio, pontos) {
             if (confirm(`Confirma o resgate de:\n\n${beneficio}\n\nSerão descontados ${pontos} pontos do seu saldo.`)) {
-                // Envia requisição para resgatar
-                fetch('/api/resgatar', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        beneficio: beneficio,
-                        pontos: pontos
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Mostra modal com código
-                        document.getElementById('modalDesc').textContent = data.mensagem;
-                        document.getElementById('modalCode').textContent = data.codigo;
-                        document.getElementById('modalConfirm').classList.add('show');
-                    } else {
-                        alert('❌ ' + data.mensagem);
-                    }
-                })
-                .catch(error => {
-                    alert('Erro ao resgatar. Tente novamente.');
-                });
+                const pontosAtual = loadPontos();
+                
+                if (pontosAtual < pontos) {
+                    alert('❌ Você não tem pontos suficientes!');
+                    return;
+                }
+
+                // Debita pontos
+                const novoSaldo = pontosAtual - pontos;
+                localStorage.setItem('pontu_points', novoSaldo.toString());
+
+                // Gera código
+                const codigo = gerarCodigo();
+
+                // Salva no histórico
+                const resgates = JSON.parse(localStorage.getItem('pontu_resgates') || '[]');
+                const novoResgate = {
+                    id: Date.now(),
+                    beneficio: beneficio,
+                    pontos: pontos,
+                    codigo: codigo,
+                    data: new Date().toISOString()
+                };
+                resgates.unshift(novoResgate);
+                localStorage.setItem('pontu_resgates', JSON.stringify(resgates));
+
+                // Mostra modal
+                document.getElementById('modalDesc').textContent = `${beneficio} resgatado com sucesso!`;
+                document.getElementById('modalCode').textContent = codigo;
+                document.getElementById('modalConfirm').classList.add('show');
+
+                // Atualiza tela
+                loadPontos();
+                renderBeneficios();
+                renderHistorico();
             }
         }
+
+        // Fecha modal
+        function fecharModal() {
+            document.getElementById('modalConfirm').classList.remove('show');
+        }
+
+        // Renderiza histórico
+        function renderHistorico() {
+            const resgates = JSON.parse(localStorage.getItem('pontu_resgates') || '[]');
+            const container = document.getElementById('historicoContainer');
+
+            if (resgates.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🎁</div>
+                        <div>Nenhum resgate ainda</div>
+                        <div style="font-size: 13px; margin-top: 5px;">Acumule pontos e resgate seus benefícios!</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            resgates.forEach(resgate => {
+                const data = new Date(resgate.data);
+                const dataFormatada = data.toLocaleDateString('pt-BR') + ' às ' + data.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+
+                const item = document.createElement('div');
+                item.className = 'historico-item';
+                item.innerHTML = `
+                    <div class="historico-info">
+                        <div class="historico-titulo">${resgate.beneficio}</div>
+                        <div class="historico-data">${dataFormatada}</div>
+                        <div class="historico-codigo">${resgate.codigo}</div>
+                    </div>
+                    <div class="historico-pontos">-${resgate.pontos}</div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Inicializa
+        loadPontos();
+        renderBeneficios();
+        renderHistorico();
     </script>
 </body>
 </html>

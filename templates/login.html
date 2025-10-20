@@ -4,8 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pontu - Login</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
         .login-container {
             min-height: 100vh;
             background: #f5f5f5;
@@ -33,6 +45,16 @@
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
         }
 
         .login-logo-icon {
@@ -56,10 +78,75 @@
             margin-bottom: 20px;
             font-size: 14px;
             display: none;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .error-message.show {
             display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #212121;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #E0E0E0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #388E3C;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
         }
 
         .login-footer {
@@ -78,6 +165,30 @@
         .login-footer a:hover {
             text-decoration: underline;
         }
+
+        .demo-info {
+            background: #E3F2FD;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #1565C0;
+        }
+
+        .demo-info strong {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .demo-credentials {
+            background: rgba(255,255,255,0.7);
+            padding: 8px;
+            border-radius: 5px;
+            margin-top: 5px;
+            font-family: monospace;
+        }
     </style>
 </head>
 <body>
@@ -88,10 +199,19 @@
             </div>
             
             <h2 class="login-title">PONTU</h2>
+
+            <!-- Informações de Demo -->
+            <div class="demo-info">
+                <strong>🎯 Credenciais de Teste:</strong>
+                <div class="demo-credentials">
+                    <div>📧 Email: <strong>teste@gmail.com</strong></div>
+                    <div>🔑 Senha: <strong>123456</strong></div>
+                </div>
+            </div>
             
             <div id="errorMessage" class="error-message"></div>
             
-            <form id="loginForm" method="POST" action="/login">
+            <form id="loginForm">
                 <div class="form-group">
                     <label class="form-label" for="email">E-mail</label>
                     <input 
@@ -101,6 +221,7 @@
                         class="form-input" 
                         placeholder="seu@email.com"
                         required
+                        autocomplete="email"
                     >
                 </div>
                 
@@ -113,48 +234,107 @@
                         class="form-input" 
                         placeholder="••••••••"
                         required
+                        autocomplete="current-password"
                     >
                 </div>
                 
-                <button type="submit" class="btn btn-primary btn-block mt-2">
+                <button type="submit" class="btn btn-primary">
                     Entrar
                 </button>
             </form>
             
             <div class="login-footer">
-                Não tem conta? <a href="/cadastro">Cadastre-se</a>
+                Não tem conta? <a href="cadastro.html">Cadastre-se</a>
             </div>
         </div>
     </div>
 
     <script>
-        // Exibe mensagem de erro se houver
-        const urlParams = new URLSearchParams(window.location.search);
-        const error = urlParams.get('error');
-        
-        if (error) {
-            const errorDiv = document.getElementById('errorMessage');
-            if (error === 'credentials') {
-                errorDiv.textContent = '❌ E-mail ou senha incorretos!';
-            } else if (error === 'required') {
-                errorDiv.textContent = '⚠️ Por favor, faça login para continuar.';
-            } else {
-                errorDiv.textContent = '❌ Erro ao fazer login. Tente novamente.';
-            }
-            errorDiv.classList.add('show');
+        // Credenciais válidas
+        const VALID_EMAIL = 'teste@gmail.com';
+        const VALID_PASSWORD = '123456';
+
+        // Se já está logado, redireciona
+        if (localStorage.getItem('pontu_logged_in') === 'true') {
+            window.location.href = 'home.html';
         }
 
-        // Validação do formulário
+        // Função para mostrar mensagem de erro
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            
+            // Remove após 5 segundos
+            setTimeout(() => {
+                errorDiv.classList.remove('show');
+            }, 5000);
+        }
+
+        // Tratamento do formulário
         document.getElementById('loginForm').addEventListener('submit', function(e) {
-            const email = document.getElementById('email').value;
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
             const senha = document.getElementById('senha').value;
             
+            // Validação básica
             if (!email || !senha) {
-                e.preventDefault();
-                const errorDiv = document.getElementById('errorMessage');
-                errorDiv.textContent = '⚠️ Por favor, preencha todos os campos!';
-                errorDiv.classList.add('show');
+                showError('⚠️ Por favor, preencha todos os campos!');
+                return;
             }
+
+            // Verifica credenciais
+            if (email === VALID_EMAIL && senha === VALID_PASSWORD) {
+                // Login bem-sucedido!
+                
+                // Salva dados no localStorage
+                localStorage.setItem('pontu_logged_in', 'true');
+                localStorage.setItem('pontu_user_name', 'Usuário Teste');
+                localStorage.setItem('pontu_user_email', email);
+                
+                // Inicializa pontos se não existir
+                if (!localStorage.getItem('pontu_points')) {
+                    localStorage.setItem('pontu_points', '0');
+                }
+
+                // Inicializa arrays vazios se não existirem
+                if (!localStorage.getItem('pontu_viagens')) {
+                    localStorage.setItem('pontu_viagens', JSON.stringify([]));
+                }
+                if (!localStorage.getItem('pontu_resgates')) {
+                    localStorage.setItem('pontu_resgates', JSON.stringify([]));
+                }
+                if (!localStorage.getItem('pontu_favoritos')) {
+                    localStorage.setItem('pontu_favoritos', JSON.stringify([]));
+                }
+                if (!localStorage.getItem('pontu_feedbacks')) {
+                    localStorage.setItem('pontu_feedbacks', JSON.stringify([]));
+                }
+
+                // Animação de sucesso e redirecionamento
+                const btn = document.querySelector('.btn-primary');
+                btn.textContent = '✓ Login realizado!';
+                btn.style.background = '#4CAF50';
+                
+                setTimeout(() => {
+                    window.location.href = 'home.html';
+                }, 800);
+                
+            } else {
+                // Credenciais inválidas
+                showError('❌ E-mail ou senha incorretos!');
+                
+                // Limpa o campo de senha
+                document.getElementById('senha').value = '';
+                document.getElementById('senha').focus();
+            }
+        });
+
+        // Auto-complete para demo (remover em produção)
+        document.getElementById('email').addEventListener('dblclick', function() {
+            this.value = VALID_EMAIL;
+            document.getElementById('senha').value = VALID_PASSWORD;
         });
     </script>
 </body>

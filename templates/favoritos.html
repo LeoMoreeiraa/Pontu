@@ -1,11 +1,33 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pontu - Favoritos</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #f5f5f5;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 80px;
+        }
+
         .header-favoritos {
             background: linear-gradient(135deg, #4CAF50, #81C784);
             padding: 15px 20px;
@@ -30,7 +52,7 @@
         }
 
         .content-favoritos {
-            padding: 20px 20px 100px;
+            padding: 20px 20px 20px;
         }
 
         .empty-state-favoritos {
@@ -69,6 +91,10 @@
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
+        }
+
+        .btn-add-favorito:hover {
+            background: #388E3C;
         }
 
         .favoritos-list {
@@ -143,10 +169,6 @@
             transform: scale(1.2);
         }
 
-        .btn-icon.delete:hover {
-            filter: brightness(0.8);
-        }
-
         .section-header-fav {
             font-size: 16px;
             font-weight: 600;
@@ -198,74 +220,44 @@
             background: #E8F5E9;
         }
 
-        .modal-delete {
-            display: none;
+        .bottom-nav-home {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-delete.show {
-            display: flex;
-        }
-
-        .modal-delete-content {
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 480px;
+            width: 100%;
             background: white;
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 320px;
-            width: 90%;
-            text-align: center;
-        }
-
-        .modal-delete-icon {
-            font-size: 64px;
-            margin-bottom: 15px;
-        }
-
-        .modal-delete-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #212121;
-            margin-bottom: 10px;
-        }
-
-        .modal-delete-desc {
-            font-size: 14px;
-            color: #757575;
-            margin-bottom: 20px;
-        }
-
-        .modal-buttons {
+            border-top: 1px solid #E0E0E0;
             display: flex;
-            gap: 10px;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 100;
         }
 
-        .btn-cancel {
-            flex: 1;
-            padding: 12px;
-            background: #F5F5F5;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
+        .nav-item-home {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #9E9E9E;
+            transition: all 0.2s;
+            padding: 5px 20px;
         }
 
-        .btn-confirm {
-            flex: 1;
-            padding: 12px;
-            background: #F44336;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
+        .nav-item-home.active {
+            color: #4CAF50;
+        }
+
+        .nav-item-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .nav-item-label {
+            font-size: 11px;
+            font-weight: 500;
         }
     </style>
 </head>
@@ -273,99 +265,32 @@
     <div class="app-container">
         <!-- Header -->
         <div class="header-favoritos">
-            <button class="back-btn" onclick="window.location.href='/home'">←</button>
+            <button class="back-btn" onclick="window.location.href='home.html'">←</button>
             <div class="header-title-favoritos">Meus Favoritos</div>
         </div>
 
-        <div class="content-favoritos">
-            {% if favoritos and favoritos|length > 0 %}
-                <!-- Ações Rápidas -->
-                <div class="quick-actions">
-                    <div class="quick-actions-title">⚡ Ações Rápidas</div>
-                    <button class="quick-btn" onclick="window.location.href='/rotas'">
-                        🗺️ Adicionar nova rota favorita
-                    </button>
-                    <button class="quick-btn" onclick="compartilharFavoritos()">
-                        📤 Compartilhar meus favoritos
-                    </button>
-                </div>
-
-                <!-- Lista de Favoritos -->
-                <div class="section-header-fav">
-                    <span>⭐ Suas Rotas</span>
-                    <span class="count-badge">{{ favoritos|length }}</span>
-                </div>
-
-                <div class="favoritos-list">
-                    {% for favorito in favoritos %}
-                    <div class="favorito-card" id="fav-{{ favorito.id }}">
-                        <div class="favorito-icon">⭐</div>
-                        <div class="favorito-info">
-                            <div class="favorito-nome">{{ favorito.nome }}</div>
-                            <div class="favorito-rota">
-                                📍 {{ favorito.origem }} → {{ favorito.destino }}
-                            </div>
-                        </div>
-                        <div class="favorito-actions">
-                            <button class="btn-icon" onclick="usarRota('{{ favorito.nome }}', '{{ favorito.origem }}', '{{ favorito.destino }}')">
-                                🗺️
-                            </button>
-                            <button class="btn-icon delete" onclick="confirmarDelete({{ favorito.id }}, '{{ favorito.nome }}')">
-                                🗑️
-                            </button>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-
-            {% else %}
-                <!-- Estado Vazio -->
-                <div class="empty-state-favoritos">
-                    <div class="empty-icon-favoritos">⭐</div>
-                    <div class="empty-title">Nenhum favorito ainda</div>
-                    <div class="empty-desc">
-                        Adicione suas rotas mais usadas aos favoritos para acessá-las rapidamente!
-                    </div>
-                    <a href="/rotas" class="btn-add-favorito">
-                        Explorar Rotas
-                    </a>
-                </div>
-            {% endif %}
-        </div>
-
-        <!-- Modal de Confirmação de Delete -->
-        <div class="modal-delete" id="modalDelete">
-            <div class="modal-delete-content">
-                <div class="modal-delete-icon">⚠️</div>
-                <div class="modal-delete-title">Remover Favorito?</div>
-                <div class="modal-delete-desc" id="deleteDesc">
-                    Tem certeza que deseja remover esta rota dos favoritos?
-                </div>
-                <div class="modal-buttons">
-                    <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
-                    <button class="btn-confirm" id="btnConfirmDelete">Remover</button>
-                </div>
-            </div>
+        <div class="content-favoritos" id="contentContainer">
+            <!-- Conteúdo será carregado aqui -->
         </div>
 
         <!-- Navegação Inferior -->
         <div class="bottom-nav-home">
-            <a href="/home" class="nav-item-home">
+            <a href="home.html" class="nav-item-home">
                 <span class="nav-item-icon">🏠</span>
                 <span class="nav-item-label">Início</span>
             </a>
             
-            <a href="/rotas" class="nav-item-home">
+            <a href="rotas.html" class="nav-item-home">
                 <span class="nav-item-icon">🗺️</span>
                 <span class="nav-item-label">Rotas</span>
             </a>
             
-            <a href="/resgatar" class="nav-item-home">
+            <a href="resgatar.html" class="nav-item-home">
                 <span class="nav-item-icon">🎁</span>
                 <span class="nav-item-label">Resgatar</span>
             </a>
             
-            <a href="/perfil" class="nav-item-home">
+            <a href="perfil.html" class="nav-item-home">
                 <span class="nav-item-icon">👤</span>
                 <span class="nav-item-label">Perfil</span>
             </a>
@@ -373,72 +298,101 @@
     </div>
 
     <script>
-        let favoritoParaRemover = null;
+        // Verifica login
+        if (localStorage.getItem('pontu_logged_in') !== 'true') {
+            window.location.href = 'login.html';
+        }
+
+        // Renderiza favoritos
+        function renderFavoritos() {
+            const favoritos = JSON.parse(localStorage.getItem('pontu_favoritos') || '[]');
+            const container = document.getElementById('contentContainer');
+
+            if (favoritos.length === 0) {
+                // Estado vazio
+                container.innerHTML = `
+                    <div class="empty-state-favoritos">
+                        <div class="empty-icon-favoritos">⭐</div>
+                        <div class="empty-title">Nenhum favorito ainda</div>
+                        <div class="empty-desc">
+                            Adicione suas rotas mais usadas aos favoritos para acessá-las rapidamente!
+                        </div>
+                        <a href="rotas.html" class="btn-add-favorito">
+                            Explorar Rotas
+                        </a>
+                    </div>
+                `;
+            } else {
+                // Renderiza favoritos
+                container.innerHTML = `
+                    <!-- Ações Rápidas -->
+                    <div class="quick-actions">
+                        <div class="quick-actions-title">⚡ Ações Rápidas</div>
+                        <button class="quick-btn" onclick="window.location.href='rotas.html'">
+                            🗺️ Adicionar nova rota favorita
+                        </button>
+                        <button class="quick-btn" onclick="compartilharFavoritos()">
+                            📤 Compartilhar meus favoritos
+                        </button>
+                    </div>
+
+                    <!-- Lista de Favoritos -->
+                    <div class="section-header-fav">
+                        <span>⭐ Suas Rotas</span>
+                        <span class="count-badge">${favoritos.length}</span>
+                    </div>
+
+                    <div class="favoritos-list" id="favoritosList"></div>
+                `;
+
+                const list = document.getElementById('favoritosList');
+                favoritos.forEach((fav, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'favorito-card';
+                    card.dataset.index = index;
+                    card.innerHTML = `
+                        <div class="favorito-icon">⭐</div>
+                        <div class="favorito-info">
+                            <div class="favorito-nome">${fav.nome}</div>
+                            <div class="favorito-rota">
+                                📍 ${fav.origem} → ${fav.destino}
+                            </div>
+                        </div>
+                        <div class="favorito-actions">
+                            <button class="btn-icon" onclick="usarRota('${fav.nome}', '${fav.origem}', '${fav.destino}')">
+                                🗺️
+                            </button>
+                            <button class="btn-icon" onclick="removerFavorito(${index})">
+                                🗑️
+                            </button>
+                        </div>
+                    `;
+                    list.appendChild(card);
+                });
+            }
+        }
 
         function usarRota(nome, origem, destino) {
-            // Redireciona para tela de rotas com a rota selecionada
             alert(`🗺️ Abrindo rota:\n\n${nome}\n${origem} → ${destino}\n\n(Redirecionamento em desenvolvimento)`);
-            // window.location.href = `/rotas?rota=${encodeURIComponent(nome)}`;
         }
 
-        function confirmarDelete(id, nome) {
-            favoritoParaRemover = id;
-            document.getElementById('deleteDesc').textContent = 
-                `Tem certeza que deseja remover "${nome}" dos favoritos?`;
-            document.getElementById('modalDelete').classList.add('show');
+        function removerFavorito(index) {
+            const favoritos = JSON.parse(localStorage.getItem('pontu_favoritos') || '[]');
+            const favorito = favoritos[index];
             
-            // Configura botão de confirmar
-            document.getElementById('btnConfirmDelete').onclick = function() {
-                removerFavorito(id);
-            };
-        }
-
-        function fecharModal() {
-            document.getElementById('modalDelete').classList.remove('show');
-            favoritoParaRemover = null;
-        }
-
-        function removerFavorito(id) {
-            fetch(`/api/remover-favorito/${id}`, {
-                method: 'DELETE'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Remove o card visualmente
-                    const card = document.getElementById(`fav-${id}`);
-                    card.style.opacity = '0';
-                    card.style.transform = 'translateX(-100%)';
-                    
-                    setTimeout(() => {
-                        card.remove();
-                        
-                        // Se não há mais favoritos, recarrega a página
-                        const remaining = document.querySelectorAll('.favorito-card').length;
-                        if (remaining === 0) {
-                            window.location.reload();
-                        } else {
-                            // Atualiza contador
-                            const badge = document.querySelector('.count-badge');
-                            if (badge) {
-                                badge.textContent = remaining;
-                            }
-                        }
-                    }, 300);
-                    
-                    fecharModal();
-                } else {
-                    alert('Erro ao remover favorito.');
-                }
-            })
-            .catch(error => {
-                alert('Erro ao remover favorito. Tente novamente.');
-            });
+            if (confirm(`Tem certeza que deseja remover "${favorito.nome}" dos favoritos?`)) {
+                favoritos.splice(index, 1);
+                localStorage.setItem('pontu_favoritos', JSON.stringify(favoritos));
+                renderFavoritos();
+            }
         }
 
         function compartilharFavoritos() {
             alert('📤 Funcionalidade de compartilhamento em desenvolvimento!\n\nEm breve você poderá compartilhar suas rotas favoritas com amigos.');
         }
+
+        // Inicializa
+        renderFavoritos();
     </script>
 </body>
 </html>

@@ -4,8 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pontu - Bem-vindo</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
         .splash-container {
             min-height: 100vh;
             background: linear-gradient(135deg, #4CAF50 0%, #81C784 100%);
@@ -14,6 +26,41 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animação de fundo */
+        .splash-container::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .splash-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .splash-logo {
@@ -24,15 +71,20 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            margin: 0 auto 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
             animation: pulse 2s infinite;
         }
 
-        .splash-logo img {
-            width: 100px;
-            height: 100px;
-            object-fit: contain;
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+            }
         }
 
         .splash-logo-placeholder {
@@ -46,6 +98,12 @@
             letter-spacing: 4px;
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            animation: fadeIn 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .splash-subtitle {
@@ -53,6 +111,7 @@
             color: rgba(255,255,255,0.9);
             margin-bottom: 60px;
             text-align: center;
+            animation: fadeIn 1s ease-out 0.5s both;
         }
 
         .splash-buttons {
@@ -61,6 +120,7 @@
             gap: 15px;
             width: 100%;
             max-width: 300px;
+            animation: fadeIn 1s ease-out 0.7s both;
         }
 
         .splash-btn {
@@ -73,6 +133,7 @@
             transition: all 0.3s;
             text-decoration: none;
             text-align: center;
+            display: block;
         }
 
         .splash-btn-primary {
@@ -98,30 +159,84 @@
             transform: translateY(-3px);
         }
 
-        @keyframes pulse {
+        .splash-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Partículas flutuantes */
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 50%;
+            animation: float 15s infinite;
+        }
+
+        @keyframes float {
             0%, 100% {
-                transform: scale(1);
+                transform: translateY(0) translateX(0);
+                opacity: 0;
             }
-            50% {
-                transform: scale(1.05);
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
             }
         }
+
+        .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 20%; animation-delay: 2s; }
+        .particle:nth-child(3) { left: 30%; animation-delay: 4s; }
+        .particle:nth-child(4) { left: 40%; animation-delay: 1s; }
+        .particle:nth-child(5) { left: 50%; animation-delay: 3s; }
+        .particle:nth-child(6) { left: 60%; animation-delay: 5s; }
+        .particle:nth-child(7) { left: 70%; animation-delay: 2.5s; }
+        .particle:nth-child(8) { left: 80%; animation-delay: 4.5s; }
+        .particle:nth-child(9) { left: 90%; animation-delay: 1.5s; }
     </style>
 </head>
 <body>
     <div class="splash-container">
-        <div class="splash-logo">
-            <!-- Substitua o emoji por <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Pontu Logo"> -->
-            <span class="splash-logo-placeholder">🌱</span>
-        </div>
-        
-        <h1 class="splash-title">PONTU</h1>
-        <p class="splash-subtitle">Mobilidade sustentável com recompensas</p>
-        
-        <div class="splash-buttons">
-            <a href="/login" class="splash-btn splash-btn-primary">Entrar</a>
-            <a href="/cadastro" class="splash-btn splash-btn-secondary">Criar Conta</a>
+        <!-- Partículas decorativas -->
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+
+        <div class="splash-content">
+            <div class="splash-logo">
+                <span class="splash-logo-placeholder">🌱</span>
+            </div>
+            
+            <h1 class="splash-title">PONTU</h1>
+            <p class="splash-subtitle">Mobilidade sustentável com recompensas</p>
+            
+            <div class="splash-buttons">
+                <a href="login.html" class="splash-btn splash-btn-primary">Entrar</a>
+                <a href="cadastro.html" class="splash-btn splash-btn-secondary">Criar Conta</a>
+            </div>
         </div>
     </div>
+
+    <script>
+        // Se já está logado, redireciona automaticamente
+        if (localStorage.getItem('pontu_logged_in') === 'true') {
+            // Pequeno delay para mostrar a animação
+            setTimeout(() => {
+                window.location.href = 'home.html';
+            }, 500);
+        }
+    </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil - Pontu</title>
+    <title>Pontu - Perfil</title>
     <style>
         * {
             margin: 0;
@@ -12,21 +12,25 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #f5f5f5;
+            min-height: 100vh;
+            position: relative;
             padding-bottom: 80px;
         }
 
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .header-perfil {
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+            padding: 15px 20px;
             color: white;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
             display: flex;
             align-items: center;
             gap: 15px;
@@ -38,12 +42,16 @@
             color: white;
             font-size: 24px;
             cursor: pointer;
+            padding: 5px;
         }
 
-        .container {
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 0 20px;
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .content-perfil {
+            padding: 20px 20px 20px;
         }
 
         .profile-card {
@@ -58,13 +66,23 @@
         .avatar {
             width: 100px;
             height: 100px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4CAF50, #81C784);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 48px;
             margin: 0 auto 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
         }
 
         .profile-name {
@@ -77,6 +95,7 @@
         .profile-email {
             color: #666;
             margin-bottom: 20px;
+            font-size: 14px;
         }
 
         .stats-grid {
@@ -95,7 +114,7 @@
         .stat-value {
             font-size: 24px;
             font-weight: bold;
-            color: #667eea;
+            color: #4CAF50;
         }
 
         .stat-label {
@@ -158,12 +177,13 @@
 
         .menu-arrow {
             color: #ccc;
+            font-size: 20px;
         }
 
         .btn-logout {
             width: 100%;
             padding: 15px;
-            background: #f44336;
+            background: #F44336;
             color: white;
             border: none;
             border-radius: 10px;
@@ -174,159 +194,174 @@
         }
 
         .btn-logout:hover {
-            background: #d32f2f;
+            background: #D32F2F;
         }
 
-        .nav-bottom {
+        .bottom-nav-home {
             position: fixed;
             bottom: 0;
-            left: 0;
-            right: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 480px;
+            width: 100%;
             background: white;
+            border-top: 1px solid #E0E0E0;
             display: flex;
             justify-content: space-around;
-            padding: 15px 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            padding: 12px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 100;
         }
 
-        .nav-item {
-            text-align: center;
-            color: #666;
+        .nav-item-home {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-decoration: none;
-            transition: color 0.3s;
-            flex: 1;
+            color: #9E9E9E;
+            transition: all 0.2s;
+            padding: 5px 20px;
         }
 
-        .nav-item:hover, .nav-item.active {
-            color: #667eea;
+        .nav-item-home.active {
+            color: #4CAF50;
         }
 
-        .nav-icon {
+        .nav-item-icon {
             font-size: 24px;
-            display: block;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
-        .nav-label {
-            font-size: 12px;
+        .nav-item-label {
+            font-size: 11px;
+            font-weight: 500;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="header-content">
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header-perfil">
             <button class="back-btn" onclick="window.location.href='home.html'">←</button>
-            <h1>Meu Perfil</h1>
+            <div class="header-title">Meu Perfil</div>
+        </div>
+
+        <div class="content-perfil">
+            <!-- Card de Perfil -->
+            <div class="profile-card">
+                <div class="avatar">👤</div>
+                <div class="profile-name" id="profileName">Usuário</div>
+                <div class="profile-email" id="profileEmail">email@exemplo.com</div>
+                
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-value" id="totalPoints">0</div>
+                        <div class="stat-label">Pontos</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="totalTrips">0</div>
+                        <div class="stat-label">Viagens</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="totalRedeemed">0</div>
+                        <div class="stat-label">Resgates</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Minha Conta -->
+            <div class="section">
+                <div class="section-title">Minha Conta</div>
+                
+                <a href="historico.html" class="menu-item">
+                    <div class="menu-icon">📊</div>
+                    <div class="menu-text">
+                        <div class="menu-title">Histórico de Viagens</div>
+                        <div class="menu-desc">Veja todas as suas viagens</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </a>
+
+                <a href="resgatar.html" class="menu-item">
+                    <div class="menu-icon">🎁</div>
+                    <div class="menu-text">
+                        <div class="menu-title">Meus Resgates</div>
+                        <div class="menu-desc">Histórico de recompensas</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </a>
+
+                <a href="favoritos.html" class="menu-item">
+                    <div class="menu-icon">⭐</div>
+                    <div class="menu-text">
+                        <div class="menu-title">Rotas Favoritas</div>
+                        <div class="menu-desc">Suas rotas salvas</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </a>
+            </div>
+
+            <!-- Configurações -->
+            <div class="section">
+                <div class="section-title">Configurações</div>
+                
+                <div class="menu-item" onclick="alert('🚧 Funcionalidade em desenvolvimento')">
+                    <div class="menu-icon">🔔</div>
+                    <div class="menu-text">
+                        <div class="menu-title">Notificações</div>
+                        <div class="menu-desc">Gerencie suas notificações</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+
+                <div class="menu-item" onclick="alert('🚧 Funcionalidade em desenvolvimento')">
+                    <div class="menu-icon">🔒</div>
+                    <div class="menu-text">
+                        <div class="menu-title">Privacidade</div>
+                        <div class="menu-desc">Configurações de privacidade</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+
+                <div class="menu-item" onclick="alert('🚧 Funcionalidade em desenvolvimento')">
+                    <div class="menu-icon">ℹ️</div>
+                    <div class="menu-text">
+                        <div class="menu-title">Sobre o Pontu</div>
+                        <div class="menu-desc">Versão 1.0.0</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+            </div>
+
+            <!-- Logout -->
+            <div class="section">
+                <button class="btn-logout" onclick="logout()">Sair da Conta</button>
+            </div>
+        </div>
+
+        <!-- Navegação Inferior -->
+        <div class="bottom-nav-home">
+            <a href="home.html" class="nav-item-home">
+                <span class="nav-item-icon">🏠</span>
+                <span class="nav-item-label">Início</span>
+            </a>
+            
+            <a href="rotas.html" class="nav-item-home">
+                <span class="nav-item-icon">🗺️</span>
+                <span class="nav-item-label">Rotas</span>
+            </a>
+            
+            <a href="resgatar.html" class="nav-item-home">
+                <span class="nav-item-icon">🎁</span>
+                <span class="nav-item-label">Resgatar</span>
+            </a>
+            
+            <a href="perfil.html" class="nav-item-home active">
+                <span class="nav-item-icon">👤</span>
+                <span class="nav-item-label">Perfil</span>
+            </a>
         </div>
     </div>
-
-    <div class="container">
-        <div class="profile-card">
-            <div class="avatar">👤</div>
-            <div class="profile-name" id="profileName">Usuário</div>
-            <div class="profile-email" id="profileEmail">email@exemplo.com</div>
-            
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <div class="stat-value" id="totalPoints">0</div>
-                    <div class="stat-label">Pontos</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" id="totalTrips">0</div>
-                    <div class="stat-label">Viagens</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" id="totalRedeemed">0</div>
-                    <div class="stat-label">Resgates</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title">Minha Conta</div>
-            
-            <a href="historico.html" class="menu-item">
-                <div class="menu-icon">📊</div>
-                <div class="menu-text">
-                    <div class="menu-title">Histórico de Viagens</div>
-                    <div class="menu-desc">Veja todas as suas viagens</div>
-                </div>
-                <div class="menu-arrow">›</div>
-            </a>
-
-            <a href="resgatar.html" class="menu-item">
-                <div class="menu-icon">🎁</div>
-                <div class="menu-text">
-                    <div class="menu-title">Meus Resgates</div>
-                    <div class="menu-desc">Histórico de recompensas</div>
-                </div>
-                <div class="menu-arrow">›</div>
-            </a>
-
-            <a href="favoritos.html" class="menu-item">
-                <div class="menu-icon">⭐</div>
-                <div class="menu-text">
-                    <div class="menu-title">Rotas Favoritas</div>
-                    <div class="menu-desc">Suas rotas salvas</div>
-                </div>
-                <div class="menu-arrow">›</div>
-            </a>
-        </div>
-
-        <div class="section">
-            <div class="section-title">Configurações</div>
-            
-            <div class="menu-item" onclick="alert('Funcionalidade em desenvolvimento')">
-                <div class="menu-icon">🔔</div>
-                <div class="menu-text">
-                    <div class="menu-title">Notificações</div>
-                    <div class="menu-desc">Gerencie suas notificações</div>
-                </div>
-                <div class="menu-arrow">›</div>
-            </div>
-
-            <div class="menu-item" onclick="alert('Funcionalidade em desenvolvimento')">
-                <div class="menu-icon">🔒</div>
-                <div class="menu-text">
-                    <div class="menu-title">Privacidade</div>
-                    <div class="menu-desc">Configurações de privacidade</div>
-                </div>
-                <div class="menu-arrow">›</div>
-            </div>
-
-            <div class="menu-item" onclick="alert('Funcionalidade em desenvolvimento')">
-                <div class="menu-icon">ℹ️</div>
-                <div class="menu-text">
-                    <div class="menu-title">Sobre o Pontu</div>
-                    <div class="menu-desc">Versão 1.0.0</div>
-                </div>
-                <div class="menu-arrow">›</div>
-            </div>
-        </div>
-
-        <div class="section">
-            <button class="btn-logout" onclick="logout()">Sair da Conta</button>
-        </div>
-    </div>
-
-    <nav class="nav-bottom">
-        <a href="home.html" class="nav-item">
-            <span class="nav-icon">🏠</span>
-            <span class="nav-label">Início</span>
-        </a>
-        <a href="explorar.html" class="nav-item">
-            <span class="nav-icon">🔍</span>
-            <span class="nav-label">Explorar</span>
-        </a>
-        <a href="planejar.html" class="nav-item">
-            <span class="nav-icon">📍</span>
-            <span class="nav-label">Planejar</span>
-        </a>
-        <a href="perfil.html" class="nav-item active">
-            <span class="nav-icon">👤</span>
-            <span class="nav-label">Perfil</span>
-        </a>
-    </nav>
 
     <script>
         // Verifica login
@@ -335,28 +370,33 @@
         }
 
         // Carrega dados do perfil
-        const nome = localStorage.getItem('pontu_user_nome') || 'Usuário';
-        const email = localStorage.getItem('pontu_user_email') || 'teste@gmail.com';
-        const pontos = localStorage.getItem('pontu_points') || '0';
-        
-        document.getElementById('profileName').textContent = nome;
-        document.getElementById('profileEmail').textContent = email;
-        document.getElementById('totalPoints').textContent = pontos;
-        
-        // Conta viagens
-        const viagens = JSON.parse(localStorage.getItem('pontu_viagens') || '[]');
-        document.getElementById('totalTrips').textContent = viagens.length;
-        
-        // Conta resgates
-        const resgates = JSON.parse(localStorage.getItem('pontu_resgates') || '[]');
-        document.getElementById('totalRedeemed').textContent = resgates.length;
+        function loadProfileData() {
+            const nome = localStorage.getItem('pontu_user_name') || 'Usuário';
+            const email = localStorage.getItem('pontu_user_email') || 'teste@gmail.com';
+            const pontos = localStorage.getItem('pontu_points') || '0';
+            
+            document.getElementById('profileName').textContent = nome;
+            document.getElementById('profileEmail').textContent = email;
+            document.getElementById('totalPoints').textContent = pontos;
+            
+            // Conta viagens
+            const viagens = JSON.parse(localStorage.getItem('pontu_viagens') || '[]');
+            document.getElementById('totalTrips').textContent = viagens.length;
+            
+            // Conta resgates
+            const resgates = JSON.parse(localStorage.getItem('pontu_resgates') || '[]');
+            document.getElementById('totalRedeemed').textContent = resgates.length;
+        }
 
         function logout() {
             if (confirm('Deseja realmente sair?')) {
                 localStorage.removeItem('pontu_logged_in');
-                window.location.href = 'index.html';
+                window.location.href = 'login.html';
             }
         }
+
+        // Inicializa
+        loadProfileData();
     </script>
 </body>
 </html>
