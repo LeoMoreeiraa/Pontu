@@ -4,8 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pontu - Explorar Transportes</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #f5f5f5;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 80px;
+        }
+
         .header-explorar {
             background: linear-gradient(135deg, #4CAF50, #81C784);
             padding: 15px 20px;
@@ -147,13 +168,69 @@
             color: #1976D2;
             line-height: 1.4;
         }
+
+        .bottom-nav-home {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 480px;
+            width: 100%;
+            background: white;
+            border-top: 1px solid #E0E0E0;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+
+        .nav-item-home {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #9E9E9E;
+            transition: all 0.2s;
+            padding: 5px 20px;
+        }
+
+        .nav-item-home.active {
+            color: #4CAF50;
+        }
+
+        .nav-item-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .nav-item-label {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .empty-search {
+            text-align: center;
+            padding: 40px 20px;
+            color: #9E9E9E;
+            display: none;
+        }
+
+        .empty-search.show {
+            display: block;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
         <!-- Header -->
         <div class="header-explorar">
-            <button class="back-btn" onclick="window.location.href='home.html'">←</button> 
+            <button class="back-btn" onclick="voltarPagina()">←</button>
             <div class="header-title-explorar">Explorar Transportes</div>
         </div>
 
@@ -180,32 +257,43 @@
                 </div>
             </div>
 
+            <!-- Mensagem de busca vazia -->
+            <div class="empty-search" id="emptySearch">
+                <div class="empty-icon">🔍</div>
+                <div style="font-size: 16px; font-weight: 600; color: #212121; margin-bottom: 5px;">
+                    Nenhum resultado encontrado
+                </div>
+                <div style="font-size: 13px;">
+                    Tente buscar por outro termo
+                </div>
+            </div>
+
             <!-- Transporte Público -->
-            <div class="category-section">
+            <div class="category-section" id="categoriaPublico">
                 <div class="category-title">🚇 Transporte Público</div>
                 <div class="transport-grid">
-                    <div class="transport-card" onclick="window.location.href='rotas.html'">
+                    <div class="transport-card" data-keywords="metro metrô linha azul verde vermelha" onclick="window.location.href='rotas.html'">
                         <div class="transport-icon-big">🚇</div>
                         <div class="transport-name">Metrô</div>
                         <div class="transport-desc">Linhas 1, 2, 3, 4, 5</div>
                         <div class="transport-pontos">+10 pts/viagem</div>
                     </div>
 
-                    <div class="transport-card" onclick="window.location.href='rotas.html'">
+                    <div class="transport-card" data-keywords="trem cptm rubi diamante" onclick="window.location.href='rotas.html'">
                         <div class="transport-icon-big">🚆</div>
                         <div class="transport-name">Trem (CPTM)</div>
                         <div class="transport-desc">Linhas 7, 8, 9, 10</div>
                         <div class="transport-pontos">+10 pts/viagem</div>
                     </div>
 
-                    <div class="transport-card" onclick="window.location.href='rotas.html'">
+                    <div class="transport-card" data-keywords="onibus ônibus sptrans municipal" onclick="window.location.href='rotas.html'">
                         <div class="transport-icon-big">🚌</div>
                         <div class="transport-name">Ônibus</div>
                         <div class="transport-desc">SPTrans Municipal</div>
                         <div class="transport-pontos">+12 pts/viagem</div>
                     </div>
 
-                    <div class="transport-card" onclick="alert('🚧 Em breve!')">
+                    <div class="transport-card" data-keywords="vlt bonde" onclick="mostrarEmBreve('VLT')">
                         <div class="transport-icon-big">🚊</div>
                         <div class="transport-name">VLT</div>
                         <div class="transport-desc">Em breve</div>
@@ -215,31 +303,31 @@
             </div>
 
             <!-- Micromobilidade -->
-            <div class="category-section">
+            <div class="category-section" id="categoriaMicro">
                 <div class="category-title">🚴 Micromobilidade</div>
                 <div class="transport-grid">
-                    <div class="transport-card" onclick="window.location.href='registrar-viagem.html'">
+                    <div class="transport-card" data-keywords="bicicleta bike itau tembici ciclovia" onclick="window.location.href='registrar_viagem.html'">
                         <div class="transport-icon-big">🚴</div>
                         <div class="transport-name">Bicicleta</div>
                         <div class="transport-desc">Itaú Bike, Tembici</div>
                         <div class="transport-pontos">+15 pts/viagem</div>
                     </div>
 
-                    <div class="transport-card" onclick="window.location.href='registrar-viagem.html'">
+                    <div class="transport-card" data-keywords="patinete scooter lime grin yellow" onclick="window.location.href='registrar_viagem.html'">
                         <div class="transport-icon-big">🛴</div>
                         <div class="transport-name">Patinete</div>
                         <div class="transport-desc">Lime, Grin, Yellow</div>
                         <div class="transport-pontos">+15 pts/viagem</div>
                     </div>
 
-                    <div class="transport-card" onclick="alert('🚧 Em breve!')">
+                    <div class="transport-card" data-keywords="skate" onclick="mostrarEmBreve('Skate')">
                         <div class="transport-icon-big">🛹</div>
                         <div class="transport-name">Skate</div>
                         <div class="transport-desc">Em breve</div>
                         <div class="transport-pontos">+15 pts/viagem</div>
                     </div>
 
-                    <div class="transport-card" onclick="alert('🚧 Em breve!')">
+                    <div class="transport-card" data-keywords="caminhada andar pé pedestres" onclick="mostrarEmBreve('Caminhada')">
                         <div class="transport-icon-big">🚶</div>
                         <div class="transport-name">Caminhada</div>
                         <div class="transport-desc">A pé</div>
@@ -249,17 +337,17 @@
             </div>
 
             <!-- Compartilhado -->
-            <div class="category-section">
+            <div class="category-section" id="categoriaCompartilhado">
                 <div class="category-title">🤝 Transporte Compartilhado</div>
                 <div class="transport-grid">
-                    <div class="transport-card" onclick="alert('🚧 Em breve!')">
+                    <div class="transport-card" data-keywords="carona blablacar waze compartilhado" onclick="mostrarEmBreve('Carona')">
                         <div class="transport-icon-big">🚗</div>
                         <div class="transport-name">Carona</div>
                         <div class="transport-desc">BlaBlaCar, Waze</div>
                         <div class="transport-pontos">+8 pts/viagem</div>
                     </div>
 
-                    <div class="transport-card" onclick="alert('🚧 Em breve!')">
+                    <div class="transport-card" data-keywords="uber pool 99 pop compartilhado" onclick="mostrarEmBreve('Uber Pool')">
                         <div class="transport-icon-big">🚕</div>
                         <div class="transport-name">Uber Pool</div>
                         <div class="transport-desc">Viagem compartilhada</div>
@@ -271,22 +359,22 @@
 
         <!-- Navegação Inferior -->
         <div class="bottom-nav-home">
-            <a href="/home" class="nav-item-home">
+            <a href="home.html" class="nav-item-home">
                 <span class="nav-item-icon">🏠</span>
                 <span class="nav-item-label">Início</span>
             </a>
             
-            <a href="/rotas" class="nav-item-home">
+            <a href="rotas.html" class="nav-item-home">
                 <span class="nav-item-icon">🗺️</span>
                 <span class="nav-item-label">Rotas</span>
             </a>
             
-            <a href="/resgatar" class="nav-item-home">
+            <a href="resgatar.html" class="nav-item-home">
                 <span class="nav-item-icon">🎁</span>
                 <span class="nav-item-label">Resgatar</span>
             </a>
             
-            <a href="/perfil" class="nav-item-home">
+            <a href="perfil.html" class="nav-item-home">
                 <span class="nav-item-icon">👤</span>
                 <span class="nav-item-label">Perfil</span>
             </a>
@@ -294,20 +382,80 @@
     </div>
 
     <script>
-        // Busca simples
+        // Verifica login
+        if (localStorage.getItem('pontu_logged_in') !== 'true') {
+            window.location.href = 'login.html';
+        }
+
+        // Função para voltar página
+        function voltarPagina() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = 'home.html';
+            }
+        }
+
+        // Mostrar mensagem "Em breve"
+        function mostrarEmBreve(transporte) {
+            alert(`🚧 ${transporte} em breve!\n\nEstamos trabalhando para adicionar este meio de transporte ao Pontu. Fique ligado nas atualizações!`);
+        }
+
+        // Busca inteligente com keywords
         document.getElementById('searchExplorar').addEventListener('input', function(e) {
-            const query = e.target.value.toLowerCase();
+            const query = e.target.value.toLowerCase().trim();
             const cards = document.querySelectorAll('.transport-card');
+            const categorias = document.querySelectorAll('.category-section');
+            const emptySearch = document.getElementById('emptySearch');
             
+            let resultadosEncontrados = 0;
+
+            if (query === '') {
+                // Se busca vazia, mostra tudo
+                cards.forEach(card => card.style.display = 'block');
+                categorias.forEach(cat => cat.style.display = 'block');
+                emptySearch.classList.remove('show');
+                return;
+            }
+
+            // Busca em cada card
             cards.forEach(card => {
                 const name = card.querySelector('.transport-name').textContent.toLowerCase();
                 const desc = card.querySelector('.transport-desc').textContent.toLowerCase();
+                const keywords = card.dataset.keywords || '';
                 
-                if (name.includes(query) || desc.includes(query)) {
+                // Busca no nome, descrição e keywords
+                if (name.includes(query) || desc.includes(query) || keywords.includes(query)) {
                     card.style.display = 'block';
+                    resultadosEncontrados++;
                 } else {
                     card.style.display = 'none';
                 }
+            });
+
+            // Esconde categorias vazias
+            categorias.forEach(categoria => {
+                const cardsVisiveis = categoria.querySelectorAll('.transport-card[style="display: block;"]');
+                if (cardsVisiveis.length === 0) {
+                    categoria.style.display = 'none';
+                } else {
+                    categoria.style.display = 'block';
+                }
+            });
+
+            // Mostra mensagem se não encontrar nada
+            if (resultadosEncontrados === 0) {
+                emptySearch.classList.add('show');
+            } else {
+                emptySearch.classList.remove('show');
+            }
+        });
+
+        // Salva transporte selecionado antes de ir para registrar
+        document.querySelectorAll('[onclick*="registrar_viagem"]').forEach(card => {
+            card.addEventListener('click', function(e) {
+                const transportName = this.querySelector('.transport-name').textContent;
+                localStorage.setItem('selected_transport', transportName.toLowerCase());
             });
         });
     </script>
