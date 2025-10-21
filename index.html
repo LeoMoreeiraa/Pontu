@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pontu - Bem-vindo</title>
     <style>
-        /* Estilos Globais */
         * {
             margin: 0;
             padding: 0;
@@ -65,8 +64,9 @@
         }
 
         .splash-logo {
-            width: 220px;
-            height: 220px;
+            width: 150px;
+            height: 150px;
+            background: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -74,7 +74,6 @@
             margin: 0 auto 20px;
             box-shadow: 0 8px 30px rgba(0,0,0,0.3);
             animation: pulse 2s infinite;
-            overflow: hidden;
         }
 
         @keyframes pulse {
@@ -88,12 +87,8 @@
             }
         }
 
-        /* ESTILO DA IMAGEM REAL DA LOGO */
-        .splash-logo-image {
-            width: 80%; /* Ajuste este valor. Ex: 80% do tamanho do círculo pai (150px) = 120px */
-            height: auto; /* Mantém a proporção da imagem */
-            /* Se a imagem for muito grande, ela pode "vazar" do círculo. 
-               Usar porcentagem ou um valor fixo menor que o width/height de .splash-logo é ideal. */
+        .splash-logo-placeholder {
+            font-size: 60px;
         }
 
         .splash-title {
@@ -208,6 +203,7 @@
 </head>
 <body>
     <div class="splash-container">
+        <!-- Partículas decorativas -->
         <div class="particle"></div>
         <div class="particle"></div>
         <div class="particle"></div>
@@ -220,7 +216,7 @@
 
         <div class="splash-content">
             <div class="splash-logo">
-                <img src="static/images/logo.png" alt="Logo da Pontu" class="splash-logo-image">
+                <span class="splash-logo-placeholder">🌱</span>
             </div>
             
             <h1 class="splash-title">PONTU</h1>
@@ -234,8 +230,9 @@
     </div>
 
     <script>
-        // Verifique se a chave do localStorage 'pontu_logged_in' é a mesma usada em auth.js ('isLoggedIn')
-        if (localStorage.getItem('isLoggedIn') === 'true') { 
+        // Se já está logado, redireciona automaticamente
+        if (localStorage.getItem('pontu_logged_in') === 'true') {
+            // Pequeno delay para mostrar a animação
             setTimeout(() => {
                 window.location.href = 'home.html';
             }, 500);
