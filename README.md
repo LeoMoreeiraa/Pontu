@@ -167,7 +167,7 @@ SOLUÇÃO IMPLEMENTADA:
 ## 🚀 Como Usar
 
 ### Acesso Online
-Acesse diretamente via GitHub Pages: [Pontu - Plataforma de Transporte Sustentável](https://leomoreiraa.github.io/Pontu/)
+Acesse diretamente via GitHub Pages: [Pontu - Plataforma de Transporte Sustentável](https://leomoreeiraa.github.io/Pontu/index.html)
 
 ### Desenvolvimento Local
 
