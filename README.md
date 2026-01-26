@@ -299,7 +299,7 @@ Para dúvidas, sugestões ou parcerias relacionadas ao projeto:
 
 **Desenvolvedor:** Leonardo Moreira  
 **GitHub:** [@LeoMoreeiraa](https://github.com/LeoMoreeiraa)  
-**Email:** [seu-email@exemplo.com]
+**Email:** [leonardomsantos12@gmail.com]
 
 ---
 
